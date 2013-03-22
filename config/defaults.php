@@ -45,11 +45,11 @@ return array(
 		 * Note that items can be used multiple times, or not at all, except the 'code' item, which should be used
 		 * exactly once.  Available items: 'code', 'shapes', 'lines', 'dots'.
 		 */
-		'render-sequence' => array(
-			'shapes',
-			'dots',
-			'code',
-			'lines'
+		'layers' => array(
+			'Shapes',
+			'Dots',
+			'Code',
+			'Lines'
 		),
 
 		/**
@@ -188,24 +188,24 @@ return array(
 	'mathematical' => array(
 
 		/**
-		 * Settings for each operand.
+		 * Number of operands (values) to include in the expression.
 		 */
-		'operands' => array(
+		'length' => 3,
 
-			/**
-			 * Number of operands (values) to include in the expression.
-			 */
-			'count' => 2,
+		/**
+		 * Minimum value of each operand.
+		 */
+		'min-value' => 2,
 
-			/**
-			 * Minimum value of each operand.
-			 */
-			'min' => 2,
+		/**
+		 * Maximum value of each operand.
+		 */
+		'max-value' => 20,
 
-			/**
-			 * Maximum value of each operand.
-			 */
-			'max' => 20
-		)
+		/**
+		 * List of characters to use as operators; these must all be legal binary arithmetic operators.  Note that
+		 * division (/) is not recommended because it can produce non-integer results.
+		 */
+		'operators' => '*+-'
 	)
 );

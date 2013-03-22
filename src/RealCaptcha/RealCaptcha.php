@@ -10,6 +10,10 @@
 
 namespace RealCaptcha;
 
+use RealCaptcha\CodeGenerator\CodeGeneratorInterface;
+use RealCaptcha\LayerRenderer\LayerRendererInterface;
+use RealCaptcha\Util\ColourUtilities;
+
 /**
  * RealCaptcha provides an easy to implement captcha mechanism for any type of web form.
  *
@@ -22,13 +26,13 @@ class RealCaptcha {
 	/**
 	 * Captcha type that displays a given number of alphanumeric characters and requests the user type them in.
 	 */
-	const TYPE_ALPHANUMERIC = 'alphanumeric';
+	const TYPE_ALPHANUMERIC = 'Alphanumeric';
 
 	/**
 	 * Captcha type that displays a simple mathematical expression (addition, subtraction, multiplication or division)
 	 * and requests the user type the correct answer.
 	 */
-	const TYPE_MATHEMATICAL = 'mathematical';
+	const TYPE_MATHEMATICAL = 'Mathematical';
 
 	/**
 	 * Relative path to the default configuration file.
@@ -39,6 +43,16 @@ class RealCaptcha {
 	 * Base session key, used on its own or after a namespace prefix is one is set.
 	 */
 	const SESSION_KEY_BASE_CODE = 'code';
+
+	/**
+	 * FQCN pattern for code generators.
+	 */
+	const CLASS_NAME_FORMAT_CODE_GENERATOR = '\\RealCaptcha\\CodeGenerator\\%sCodeGenerator';
+
+	/**
+	 * FQCN pattern for layer renderers.
+	 */
+	const CLASS_NAME_FORMAT_LAYER_RENDERER = '\\RealCaptcha\\LayerRenderer\\%sLayerRenderer';
 
 	//-- Attributes --------------------
 
@@ -88,17 +102,13 @@ class RealCaptcha {
 	 * @throws \RuntimeException
 	 */
 	public function writeImage() {
-		// Create the image.
-		$width = $this->getOption('width');
-		$height = $this->getOption('height');
-		if (!($image = imagecreate($width, $height))) {
-			throw new \RuntimeException('RealCaptcha could not initialise GD image stream');
-		}
 		// Generate the image contents according to the render sequence.
-		$this->prepareImage($image);
-		foreach ($this->getOption('render-sequence') as $item) {
-			$methodName = sprintf('draw%s', ucfirst($item));
-			$this->$methodName($image);
+		$image = $this->prepareImage();
+		foreach ($this->getOption('layers') as $layer) {
+			$className = sprintf(self::CLASS_NAME_FORMAT_LAYER_RENDERER, $layer);
+			/** @var LayerRendererInterface $renderer */
+			$renderer = new $className($this);
+			$renderer->render($image);
 		}
 		// Output to the browser.
 		$this->outputImage($image);
@@ -112,31 +122,10 @@ class RealCaptcha {
 	 * @throws \InvalidArgumentException
 	 */
 	public function generateCode() {
-		$code = array(
-			'display' => '',
-			'result' => ''
-		);
-		switch ($this->getOption('type')) {
-			case self::TYPE_ALPHANUMERIC:
-				$characters = $this->getOption('characters');
-				for ($i=0, $l=$this->getOption('length'), $max = strlen($characters)-1; $i<$l; $i++) {
-					$code['display'] .= substr($characters, mt_rand(0, $max), 1);
-				}
-				$code['result'] = $code['display'];
-				break;
-			case self::TYPE_MATHEMATICAL:
-				$operands = $this->getOption('operands');
-				$components = array();
-				for ($i=0, $l=$operands['count']; $i<$l; $i++) {
-					$components[] = mt_rand($operands['min'], $operands['max']);
-					if ($i < $l - 1) {
-						$components[] = substr('+-*', mt_rand(0, 2), 1);
-					}
-				}
-				$code['display'] = implode('', $components);
-				eval('$code["result"] = ' . $code['display'] . ';');
-				break;
-		}
+		$className = sprintf(self::CLASS_NAME_FORMAT_CODE_GENERATOR, $this->getOption('type'));
+		/** @var CodeGeneratorInterface $generator */
+		$generator = new $className($this);
+		$code = $generator->generateCode();
 		$_SESSION[$this->getSessionKey()] = $code;
 		return $code;
 	}
@@ -205,169 +194,25 @@ class RealCaptcha {
 		}
 		return array_merge(
 			$defaults['base'],
-			$defaults[$options['type']],
+			$defaults[strtolower($options['type'])],
 			$options ?: array()
 		);
 	}
 
 	/**
-	 * Create a colour reference for the given image, using the given colour which is an array containing 'red',
-	 * 'green' and 'blue' keys, each of which has an integer value in the range 0-255.
-	 *
-	 * @param resource $image
-	 * @param array $colour
-	 *
-	 * @return integer
-	 */
-	protected function createColour($image, array $colour) {
-		return imagecolorallocate($image, $this->getColourComponent($colour['red']), $this->getColourComponent($colour['green']), $this->getColourComponent($colour['blue']));
-	}
-
-	/**
-	 * Get a single colour component (red, green or blue), including conversion from an array containing 'min' and
-	 * 'max' keys, to a single random value.
-	 *
-	 * @param integer|array $value
-	 *
-	 * @return int
-	 */
-	protected function getColourComponent($value) {
-		if (is_array($value)) {
-			$value = mt_rand($value['min'], $value['max']);
-		}
-		return $value;
-	}
-
-	/**
 	 * Prepare the image for drawing.
-	 *
-	 * @param resource $image
-	 */
-	protected function prepareImage($image) {
-		$width = $this->getOption('width');
-		$height = $this->getOption('height');
-		$colour = $this->createColour($image, $this->getOption('background-colour'));
-		imagefilledrectangle($image, 0, 0, $width, $height, $colour);
-	}
-
-	/**
-	 * Draw the text of the code itself.
-	 *
-	 * @param resource $image
 	 *
 	 * @throws \RuntimeException
 	 */
-	protected function drawCode($image) {
+	protected function prepareImage() {
 		$width = $this->getOption('width');
 		$height = $this->getOption('height');
-		$text = $this->getOption('text');
-		$angle = mt_rand($text['angle']['min'], $text['angle']['max']);
-		$font = is_array($text['font']) ? $text['font'][mt_rand(0, sizeof($text['font']) - 1)] : $text['font'];
-		$fontPath = sprintf('%s/%s.ttf', $this->getOption('paths')['font'], $font);
-		$fontSize = min($height * $text['font-size-ratio']['height'], $width * $text['font-size-ratio']['width']);
-		$code = $this->generateCode();
-		if (!($textBoundingBox = imagettfbbox($fontSize, $angle, $fontPath, $code['display']))) {
-			throw new \RuntimeException('RealCaptcha encountered an error calling imagettfbbox() function.');
+		if (!($image = imagecreate($width, $height))) {
+			throw new \RuntimeException('RealCaptcha could not create image');
 		}
-		$x = ($width - $textBoundingBox[4]) / 2;
-		$y = ($height - $textBoundingBox[5]) / 2;
-		$colour = $this->createColour($image, $text['colour']);
-		if (!imagettftext($image, $fontSize, $angle, $x, $y, $colour, $fontPath , $code['display'])) {
-			throw new \RuntimeException('RealCaptcha encountered an error calling imagettftext() function.');
-		}
-	}
-
-	/**
-	 * Draw dots as noise.
-	 *
-	 * @param resource $image
-	 */
-	protected function drawDots($image) {
-		$width = $this->getOption('width');
-		$height = $this->getOption('height');
-		$noise = $this->getOption('noise');
-		$dotsCount = max($noise['dots']['min'], min($noise['dots']['max'], ($width * $height) / $noise['dots']['divisor']));
-		for ($i=0; $i<$dotsCount; $i++) {
-			$x = mt_rand(0, $width);
-			$y = mt_rand(0, $height);
-			$colour = $this->createColour($image, $noise['colour']);
-			imagefilledellipse($image, $x, $y, 1, 1, $colour);
-		}
-	}
-
-	/**
-	 * Draw lines as noise.
-	 *
-	 * @param resource $image
-	 */
-	protected function drawLines($image) {
-		$width = $this->getOption('width');
-		$height = $this->getOption('height');
-		$noise = $this->getOption('noise');
-		$linesCount = max($noise['lines']['min'], min($noise['lines']['max'], ($width * $height) / $noise['lines']['divisor']));
-		for ($i=0; $i<$linesCount; $i++) {
-			$x0 = mt_rand(0, $width);
-			$y0 = mt_rand(0, $height);
-			$x1 = mt_rand(0, $width);
-			$y1 = mt_rand(0, $height);
-			$colour = $this->createColour($image, $noise['colour']);
-			imageline($image, $x0, $y0, $x1, $y1, $colour);
-		}
-	}
-
-	/**
-	 * Draw random shapes as noise.
-	 *
-	 * @param resource $image
-	 */
-	protected function drawShapes($image) {
-		$width = $this->getOption('width');
-		$height = $this->getOption('height');
-		$noise = $this->getOption('noise');
-		$shapesCount = max($noise['shapes']['min'], min($noise['shapes']['max'], ($width * $height) / $noise['shapes']['divisor']));
-		for ($i=0; $i<$shapesCount; $i++) {
-			$colour = $this->createColour($image, $noise['colour']);
-			switch ($this->selectShape($noise['shapes']['distribution'])) {
-				case 'rectangle':
-					$cx = mt_rand(0, $width);
-					$cy = mt_rand(0, $height);
-					$x2 = mt_rand(0, $width);
-					$y2 = mt_rand(0, $height);
-					imagerectangle($image, $cx, $cy, $x2, $y2, $colour);
-					break;
-				case 'ellipse':
-					$cx = mt_rand(0, $width);
-					$cy = mt_rand(0, $height);
-					$width = mt_rand(0, $width / $noise['shapes']['size-divisor']);
-					$height = mt_rand(0, $height / $noise['shapes']['size-divisor']);
-					imageellipse($image, $cx, $cy, $width, $height, $colour);
-					break;
-				case 'arc':
-					$cx = mt_rand(0, $width);
-					$cy = mt_rand(0, $height);
-					$width = mt_rand(0, $width / $noise['shapes']['size-divisor']);
-					$height = mt_rand(0, $height / $noise['shapes']['size-divisor']);
-					$start = mt_rand(0, 360);
-					$end = mt_rand(0, 360);
-					imagearc($image, $cx, $cy, $width, $height, $start, $end, $colour);
-					break;
-			}
-		}
-	}
-
-	/**
-	 * Select a random shape based on the given distribution.
-	 *
-	 * @param array $distribution
-	 *
-	 * @return string
-	 */
-	protected function selectShape($distribution) {
-		$rand = mt_rand(0, array_sum(array_map(function($item) { return $item['weight']; }, $distribution)) - 1);
-		while ($rand >= $distribution[0]['weight']) {
-			$rand -= array_shift($distribution)['weight'];
-		}
-		return $distribution[0]['shape'];
+		$colour = ColourUtilities::createColour($image, $this->getOption('background-colour'));
+		imagefilledrectangle($image, 0, 0, $width, $height, $colour);
+		return $image;
 	}
 
 	/**
