@@ -29,3 +29,6 @@ foreach ($_POST as $name => $value) {
 <p>
 The captcha submission was <strong><?php echo $captcha->checkCode($_POST['captcha']) ? 'valid' : 'invalid'; ?></strong>.
 </p>
+<p>
+<a href="index.html">Go back</a>.
+</p>

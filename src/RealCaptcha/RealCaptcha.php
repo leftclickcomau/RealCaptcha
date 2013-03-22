@@ -112,18 +112,29 @@ class RealCaptcha {
 	 * @throws \InvalidArgumentException
 	 */
 	public function generateCode() {
-		$code = '';
+		$code = array(
+			'display' => '',
+			'result' => ''
+		);
 		switch ($this->getOption('type')) {
 			case self::TYPE_ALPHANUMERIC:
 				$characters = $this->getOption('characters');
 				for ($i=0, $l=$this->getOption('length'), $max = strlen($characters)-1; $i<$l; $i++) {
-					$code .= substr($characters, mt_rand(0, $max), 1);
+					$code['display'] .= substr($characters, mt_rand(0, $max), 1);
 				}
+				$code['result'] = $code['display'];
 				break;
-
 			case self::TYPE_MATHEMATICAL:
-				// TODO implement mathematical expression captchas
-				throw new \InvalidArgumentException('RealCaptcha mathematical type not implemented.');
+				$operands = $this->getOption('operands');
+				$components = array();
+				for ($i=0, $l=$operands['count']; $i<$l; $i++) {
+					$components[] = mt_rand($operands['min'], $operands['max']);
+					if ($i < $l - 1) {
+						$components[] = substr('+-*', mt_rand(0, 2), 1);
+					}
+				}
+				$code['display'] = implode('', $components);
+				eval('$code["result"] = ' . $code['display'] . ';');
 				break;
 		}
 		$_SESSION[$this->getSessionKey()] = $code;
@@ -140,9 +151,13 @@ class RealCaptcha {
 	 */
 	public function checkCode($code) {
 		$sessionKey = $this->getSessionKey();
+		if (!isset($_SESSION[$sessionKey])) {
+			// No code to compare against, so it can't be correct.
+			return false;
+		}
 		$storedCode = $_SESSION[$sessionKey];
 		unset($_SESSION[$sessionKey]);
-		return strtolower($code) === strtolower($storedCode);
+		return strtolower($code) === strtolower($storedCode['result']);
 	}
 
 	//-- Internal Methods --------------------
@@ -251,13 +266,13 @@ class RealCaptcha {
 		$fontPath = sprintf('%s/%s.ttf', $this->getOption('paths')['font'], $font);
 		$fontSize = min($height * $text['font-size-ratio']['height'], $width * $text['font-size-ratio']['width']);
 		$code = $this->generateCode();
-		if (!($textBoundingBox = imagettfbbox($fontSize, $angle, $fontPath, $code))) {
+		if (!($textBoundingBox = imagettfbbox($fontSize, $angle, $fontPath, $code['display']))) {
 			throw new \RuntimeException('RealCaptcha encountered an error calling imagettfbbox() function.');
 		}
 		$x = ($width - $textBoundingBox[4]) / 2;
 		$y = ($height - $textBoundingBox[5]) / 2;
 		$colour = $this->createColour($image, $text['colour']);
-		if (!imagettftext($image, $fontSize, $angle, $x, $y, $colour, $fontPath , $code)) {
+		if (!imagettftext($image, $fontSize, $angle, $x, $y, $colour, $fontPath , $code['display'])) {
 			throw new \RuntimeException('RealCaptcha encountered an error calling imagettftext() function.');
 		}
 	}

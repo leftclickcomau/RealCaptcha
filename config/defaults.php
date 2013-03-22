@@ -56,6 +56,7 @@ return array(
 		 * Path settings.
 		 */
 		'paths' => array(
+
 			/**
 			 * Path to the directory containing TTF font files.
 			 */
@@ -66,6 +67,7 @@ return array(
 		 * Details for rendering text.
 		 */
 		'text' => array(
+
 			/**
 			 * Text colour.
 			 */
@@ -74,6 +76,7 @@ return array(
 				'green' => 0,
 				'blue' => 0
 			),
+
 			/**
 			 * Font filename, must be a valid TTF filename, or an array of TTF filenames, within 'font-path' (without any
 			 * filename extension).
@@ -82,12 +85,12 @@ return array(
 				'alanden',
 				'bsurp',
 				'ehermes',
-				'luggerbug',
 				'monofont',
 				'rascal',
 				'scrawl',
 				'wavy'
 			),
+
 			/**
 			 * Ratio between the height of the image and the font size setting.
 			 */
@@ -109,6 +112,7 @@ return array(
 		 * Details for rendering dots, lines and shapes as noise.
 		 */
 		'noise' => array(
+
 			/**
 			 * Settings for dots.
 			 */
@@ -117,6 +121,7 @@ return array(
 				'min' => 0,
 				'max' => 100
 			),
+
 			/**
 			 * Settings for lines.
 			 */
@@ -125,6 +130,7 @@ return array(
 				'min' => 0,
 				'max' => 10
 			),
+
 			/**
 			 * Settings for shapes (rectangles, ellipses, arcs).
 			 */
@@ -148,6 +154,7 @@ return array(
 					)
 				)
 			),
+
 			/**
 			 * Colour for noise shapes.
 			 */
@@ -181,19 +188,24 @@ return array(
 	'mathematical' => array(
 
 		/**
-		 * Minimum value of each operand.
+		 * Settings for each operand.
 		 */
-		'operand-min' => 2,
+		'operands' => array(
 
-		/**
-		 * Maximum value of each operand.
-		 */
-		'operand-max' => 20,
+			/**
+			 * Number of operands (values) to include in the expression.
+			 */
+			'count' => 2,
 
-		/**
-		 * Number of decimals to allow in the result.  For example setting 1 will allow "3 / 2" (1.5) but will not
-		 * allow "5 / 4" (1.25).  Recurring decimal results (e.g. "1 / 3") are never allowed.
-		 */
-		'result-decimal-max' => 0
+			/**
+			 * Minimum value of each operand.
+			 */
+			'min' => 2,
+
+			/**
+			 * Maximum value of each operand.
+			 */
+			'max' => 20
+		)
 	)
 );
