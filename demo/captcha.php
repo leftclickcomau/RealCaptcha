@@ -9,8 +9,5 @@
  * RealCaptcha bootstrap demonstration.
  */
 include '../vendor/autoload.php';
-$type = isset($_GET['type']) ? $_GET['type'] : \RealCaptcha\RealCaptcha::TYPE_ALPHANUMERIC;
-$options = $_GET;
-unset($options['type']);
-$captcha = new \RealCaptcha\RealCaptcha($type, $options);
+$captcha = new \RealCaptcha\RealCaptcha($_GET);
 $captcha->writeImage();

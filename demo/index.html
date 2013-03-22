@@ -14,7 +14,7 @@ See the LICENSE and README files in the main source directory for details.
 		<p>
 		The following is a simple demonstration form, it does not do anything except validation.
 		</p>
-		<form method="post" action="">
+		<form method="post" action="captcha-check.php">
 			<fieldset>
 				<legend>Create an Account</legend>
 				<div class="field">
@@ -32,7 +32,7 @@ See the LICENSE and README files in the main source directory for details.
 				<div class="field">
 					<label for="captcha">Captcha:</label>
 					<img src="captcha.php" class="captcha" />
-					<input id="captcha" name="captcha" type="text" />
+					<input id="captcha" name="captcha" type="text" autocomplete="off" />
 				</div>
 				<div class="buttons">
 					<input type="submit" value="Submit" />

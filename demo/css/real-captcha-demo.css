@@ -16,4 +16,4 @@ div.buttons { text-align: center; background-color: #eee; padding: 8px; border-t
 div.buttons input { border: 1px solid #666; padding: 2px; background-color: #ccc; }
 div.buttons input:hover { border: 2px solid #8bf; padding: 1px; background-color: #bbb; }
 div.buttons input:active { border: 2px solid #000; padding: 1px; background-color: #8bf; }
-img.captcha { display: block; background-color: #eee; border: 1px solid #666; margin: 4px 0; }
+img.captcha { display: block; width: 200px; height: 60px; background-color: #eee; border: 1px solid #666; margin: 4px 0; }
