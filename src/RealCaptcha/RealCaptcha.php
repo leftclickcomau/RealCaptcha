@@ -43,52 +43,23 @@ class RealCaptcha {
 	//-- Attributes --------------------
 
 	/**
-	 * Must be one of the `TYPE_*` constants defined in this class.
-	 *
-	 * @var string
-	 */
-	private $type;
-
-	/**
 	 * @var array
 	 */
 	private $options;
 
-	/**
-	 * @var string
-	 */
-	private $code;
-
 	//-- Constructor --------------------
 
 	/**
-	 * @param string $type
 	 * @param array|null $options
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function __construct($type, array $options=null) {
-		// Set type and options.
-		$this->type = $type;
+	public function __construct(array $options=null) {
 		$this->options = $this->mergeOptions($options);
-		// Generate the code and store it in the session.
-		$this->code = $this->generateCode();
-		$namespace = $this->getOption('namespace');
-		$sessionKey = empty($namespace) ? self::SESSION_KEY_BASE_CODE : sprintf('%s.%s', $namespace, self::SESSION_KEY_BASE_CODE);
 		$this->initSession();
-		$_SESSION[$sessionKey] = $this->code;
 	}
 
 	//-- Public Methods --------------------
-
-	/**
-	 * Get the type of captcha being generated.
-	 *
-	 * @return string
-	 */
-	public function getType() {
-		return $this->type;
-	}
 
 	/**
 	 * Retrieve the option with the given key.
@@ -133,6 +104,47 @@ class RealCaptcha {
 		$this->outputImage($image);
 	}
 
+	/**
+	 * Generate the code for this captcha, and store it in the session.
+	 *
+	 * @return string
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function generateCode() {
+		$code = '';
+		switch ($this->getOption('type')) {
+			case self::TYPE_ALPHANUMERIC:
+				$characters = $this->getOption('characters');
+				for ($i=0, $l=$this->getOption('length'), $max = strlen($characters)-1; $i<$l; $i++) {
+					$code .= substr($characters, mt_rand(0, $max), 1);
+				}
+				break;
+
+			case self::TYPE_MATHEMATICAL:
+				// TODO implement mathematical expression captchas
+				throw new \InvalidArgumentException('RealCaptcha mathematical type not implemented.');
+				break;
+		}
+		$_SESSION[$this->getSessionKey()] = $code;
+		return $code;
+	}
+
+	/**
+	 * Compare the specified code against the code stored in the session, and remove the code from the session as it
+	 * should only ever be checked once.
+	 *
+	 * @param string $code
+	 *
+	 * @return boolean
+	 */
+	public function checkCode($code) {
+		$sessionKey = $this->getSessionKey();
+		$storedCode = $_SESSION[$sessionKey];
+		unset($_SESSION[$sessionKey]);
+		return strtolower($code) === strtolower($storedCode);
+	}
+
 	//-- Internal Methods --------------------
 
 	/**
@@ -155,6 +167,16 @@ class RealCaptcha {
 	}
 
 	/**
+	 * Generate the session key based on the configured namespace.
+	 *
+	 * @return string
+	 */
+	protected function getSessionKey() {
+		$namespace = $this->getOption('namespace');
+		return empty($namespace) ? self::SESSION_KEY_BASE_CODE : sprintf('%s.%s', $namespace, self::SESSION_KEY_BASE_CODE);
+	}
+
+	/**
 	 * Merge the options into the defaults including per-type defaults.
 	 *
 	 * @param array|null $options
@@ -163,36 +185,14 @@ class RealCaptcha {
 	 */
 	protected function mergeOptions(array $options=null) {
 		$defaults = require sprintf('%s/%s', __DIR__, self::PATH_DEFAULTS);
+		if (!isset($options['type'])) {
+			$options['type'] = self::TYPE_ALPHANUMERIC;
+		}
 		return array_merge(
 			$defaults['base'],
-			$defaults[$this->getType()],
+			$defaults[$options['type']],
 			$options ?: array()
 		);
-	}
-
-	/**
-	 * Generate the code for this captcha.
-	 *
-	 * @return string
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	protected function generateCode() {
-		$code = '';
-		switch ($this->getType()) {
-			case self::TYPE_ALPHANUMERIC:
-				$characters = $this->getOption('characters');
-				for ($i=0, $l=$this->getOption('length'), $max = strlen($characters)-1; $i<$l; $i++) {
-					$code .= substr($characters, mt_rand(0, $max), 1);
-				}
-				break;
-
-			case self::TYPE_MATHEMATICAL:
-				// TODO implement mathematical expression captchas
-				throw new \InvalidArgumentException('RealCaptcha mathematical type not implemented.');
-				break;
-		}
-		return $code;
 	}
 
 	/**
@@ -250,13 +250,14 @@ class RealCaptcha {
 		$font = is_array($text['font']) ? $text['font'][mt_rand(0, sizeof($text['font']) - 1)] : $text['font'];
 		$fontPath = sprintf('%s/%s.ttf', $this->getOption('paths')['font'], $font);
 		$fontSize = min($height * $text['font-size-ratio']['height'], $width * $text['font-size-ratio']['width']);
-		if (!($textBoundingBox = imagettfbbox($fontSize, $angle, $fontPath, $this->code))) {
+		$code = $this->generateCode();
+		if (!($textBoundingBox = imagettfbbox($fontSize, $angle, $fontPath, $code))) {
 			throw new \RuntimeException('RealCaptcha encountered an error calling imagettfbbox() function.');
 		}
 		$x = ($width - $textBoundingBox[4]) / 2;
 		$y = ($height - $textBoundingBox[5]) / 2;
 		$colour = $this->createColour($image, $text['colour']);
-		if (!imagettftext($image, $fontSize, $angle, $x, $y, $colour, $fontPath , $this->code)) {
+		if (!imagettftext($image, $fontSize, $angle, $x, $y, $colour, $fontPath , $code)) {
 			throw new \RuntimeException('RealCaptcha encountered an error calling imagettftext() function.');
 		}
 	}
