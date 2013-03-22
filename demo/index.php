@@ -32,11 +32,11 @@ See the LICENSE and README files in the main source directory for details.
 				<div class="field">
 					<label for="captcha">Captcha:</label>
 					<div id="captcha-container" onmouseover="document.getElementById('captcha-options').style.display = 'block';" onmouseout="document.getElementById('captcha-options').style.display = 'none';">
-						<img src="captcha.php?r=<?php echo mt_rand(0, 10000); ?>" id="captcha-image" />
+						<img src="" id="captcha-image" />
 						<ul id="captcha-options" style="display:none;">
 							<li>Reload...</li>
-							<li><a href="" onclick="document.getElementById('captcha-image').setAttribute('src', 'captcha.php?r=' + Math.floor(Math.random() * 10000) + '&type=mathematical'); return false;">Mathematical</a></li>
-							<li><a href="" onclick="document.getElementById('captcha-image').setAttribute('src', 'captcha.php?r=' + Math.floor(Math.random() * 10000) + '&type=alphanumeric'); return false;">Alphanumeric</a></li>
+							<li><a href="" onclick="document.getElementById('captcha-image').setAttribute('src', 'captcha.php?r=' + Math.floor(Math.random() * 10000) + '&amp;type=Alphanumeric'); document.cookie = 'captcha-type=Alphanumeric'; return false;">Alphanumeric</a></li>
+							<li><a href="" onclick="document.getElementById('captcha-image').setAttribute('src', 'captcha.php?r=' + Math.floor(Math.random() * 10000) + '&amp;type=Mathematical'); document.cookie = 'captcha-type=Mathematical'; return false;">Mathematical</a></li>
 						</ul>
 					</div>
 					<input id="captcha" name="captcha" type="text" autocomplete="off" />
@@ -47,5 +47,12 @@ See the LICENSE and README files in the main source directory for details.
 				</div>
 			</fieldset>
 		</form>
+		<script type="text/javascript">//<![CDATA
+			window.onload = function() {
+				var regex = new RegExp("(?:^|.*;\\s*)captcha-type\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"),
+					type = document.cookie.match(regex) ? document.cookie.replace(regex, "$1") : null;
+				document.getElementById('captcha-image').setAttribute('src', 'captcha.php?r=' + Math.floor(Math.random() * 10000) + (type ? '&type=' + type : ''));
+			};
+		//]]></script>
 	</body>
 </html>
