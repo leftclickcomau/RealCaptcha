@@ -31,12 +31,11 @@ See the LICENSE and README files in the main source directory for details.
 						<input id="password" name="password" type="password" />
 					</div>
 					<div class="field">
-						<label for="captcha">Captcha:</label>
+						<label for="captcha">RealCaptcha:</label>
+						<div class="note">Please solve the equation shown.</div>
 						<div id="captcha-container">
 							<img src="captcha.php?type=Mathematical" id="captcha-image" />
-						</div>
-						<div>
-							<a href="" onclick="document.getElementById('captcha-image').setAttribute('src', 'captcha.php?type=Mathematical&amp;r=' + Math.floor(Math.random() * 10000)); return false;">Reload</a>
+							<a href="" id="captcha-reload" onclick="document.getElementById('captcha-image').setAttribute('src', 'captcha.php?type=Mathematical&amp;r=' + Math.floor(Math.random() * 10000)); return false;"><img src="images/reload.gif" alt="Reload" /></a>
 						</div>
 						<input id="captcha" name="captcha" type="text" autocomplete="off" />
 					</div>
@@ -46,12 +45,8 @@ See the LICENSE and README files in the main source directory for details.
 					</div>
 				</fieldset>
 			</form>
-			<p>
-			<a href="index.php">Back to demonstration index</a>.
-			</p>
+<?php require 'partials/index-link.php'; ?>
 		</div>
-		<address>
-			RealCaptcha is an open source library provided by <a href="http://leftclick.com.au/">Leftclick.com.au</a>.
-		</address>
+<?php require 'partials/address.php'; ?>
 	</body>
 </html>

@@ -7,6 +7,7 @@
 * { font-family: sans-serif; }
 body { background-color: #ccc; }
 #container { width: 1000px; margin: 16px auto; padding: 16px; border: 2px solid #aaa; background-color: #fff; box-sizing: border-box; box-shadow: #666 0 0 64px; }
+p.index-link-container { font-size: small; }
 address { width: 1000px; margin: 16px auto; padding: 16px; font-style: normal; font-size: small; }
 a, a:link, a:visited { color: #00f; text-decoration: none; }
 a:hover, a:active { text-decoration: underline; }
@@ -19,11 +20,13 @@ div.field { padding: 0 16px; margin: 12px 0; }
 div.field label { display: block; }
 div.field input { width: 196px; border: 1px solid #666; padding: 2px; margin: 4px 0; }
 div.field input:focus { border: 1px solid #000; }
+div.field div.note { font-size: x-small; }
 div.buttons { text-align: center; background-color: #eee; padding: 8px; border-top: 1px solid #666; }
 div.buttons input { border: 1px solid #666; padding: 2px; background-color: #ccc; }
 div.buttons input:hover { border: 2px solid #8bf; padding: 1px; background-color: #bbb; }
 div.buttons input:active { border: 2px solid #000; padding: 1px; background-color: #8bf; }
 div#captcha-container { position: relative; width: 200px; height: 60px; border: 1px solid #666; margin: 4px 0; background: #eee url(../images/loading.gif) center no-repeat; }
-ul#captcha-options { display: block; list-style: none; font-size: smaller; position: absolute; top: -1px; left: 100%; padding: 2px; margin: 0; background-color: #eee; border: 1px solid #666; border-left: none; }
+ul#captcha-options { display: block; list-style: none; font-size: small; position: absolute; top: -1px; left: 100%; padding: 2px; margin: 0; background-color: #eee; border: 1px solid #666; border-left: none; }
 ul#captcha-options li { display: block; list-style: none; padding: 0; margin: 0; }
+a#captcha-reload { position: absolute; bottom: 0; right: 0; }
 img#captcha-image { display: block; }

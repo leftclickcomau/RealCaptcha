@@ -36,8 +36,6 @@ See the LICENSE and README files in the main source directory for details.
 				</dd>
 			</dl>
 		</div>
-		<address>
-			RealCaptcha is an open source library provided by <a href="http://leftclick.com.au/">Leftclick.com.au</a>.
-		</address>
+<?php require 'partials/address.php'; ?>
 	</body>
 </html>

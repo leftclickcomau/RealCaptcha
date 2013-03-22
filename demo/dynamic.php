@@ -31,7 +31,8 @@ See the LICENSE and README files in the main source directory for details.
 						<input id="password" name="password" type="password" />
 					</div>
 					<div class="field">
-						<label for="captcha">Captcha:</label>
+						<label for="captcha">RealCaptcha:</label>
+						<div class="note">Please verify yourself to prevent spam.</div>
 						<div id="captcha-container" onmouseover="document.getElementById('captcha-options').style.display = 'block';" onmouseout="document.getElementById('captcha-options').style.display = 'none';">
 							<img src="" id="captcha-image" />
 							<ul id="captcha-options" style="display:none;">
@@ -48,13 +49,9 @@ See the LICENSE and README files in the main source directory for details.
 					</div>
 				</fieldset>
 			</form>
-			<p>
-			<a href="index.php">Back to demonstration index</a>.
-			</p>
+<?php require 'partials/index-link.php'; ?>
 		</div>
-		<address>
-			RealCaptcha is an open source library provided by <a href="http://leftclick.com.au/">Leftclick.com.au</a>.
-		</address>
+<?php require 'partials/address.php'; ?>
 		<script type="text/javascript">//<![CDATA
 			window.onload = function() {
 				var regex = new RegExp("(?:^|.*;\\s*)captcha-type\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"),
