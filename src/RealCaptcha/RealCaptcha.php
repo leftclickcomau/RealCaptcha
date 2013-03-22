@@ -249,7 +249,7 @@ class RealCaptcha {
 		$angle = mt_rand($text['angle']['min'], $text['angle']['max']);
 		$font = is_array($text['font']) ? $text['font'][mt_rand(0, sizeof($text['font']) - 1)] : $text['font'];
 		$fontPath = sprintf('%s/%s.ttf', $this->getOption('paths')['font'], $font);
-		$fontSize = $height * $text['font-size-ratio'];
+		$fontSize = min($height * $text['font-size-ratio']['height'], $width * $text['font-size-ratio']['width']);
 		if (!($textBoundingBox = imagettfbbox($fontSize, $angle, $fontPath, $this->code))) {
 			throw new \RuntimeException('RealCaptcha encountered an error calling imagettfbbox() function.');
 		}

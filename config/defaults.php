@@ -79,13 +79,23 @@ return array(
 			 * filename extension).
 			 */
 			'font' => array(
+				'alanden',
+				'bsurp',
+				'ehermes',
+				'luggerbug',
 				'monofont',
+				'rascal',
+				'scrawl',
 				'wavy'
 			),
 			/**
 			 * Ratio between the height of the image and the font size setting.
 			 */
-			'font-size-ratio' => 0.5,
+			'font-size-ratio' => array(
+				'width' => 0.2,
+				'height' => 0.5
+			),
+
 			/**
 			 * Minimum and maximum angle for the text, in degrees.
 			 */
