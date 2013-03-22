@@ -1,0 +1,22 @@
+{
+	"name": "leftclick/RealCaptcha",
+	"display-name": "RealCaptcha",
+	"description": "Easy to implement captcha mechanism.",
+	"version": "0.0.1-dev",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Ben New, Leftclick.com.au",
+			"email": "ben@leftclick.com.au",
+			"homepage": "http://leftclick.com.au/"
+		}
+	],
+	"require": {
+		"php": ">=5.2"
+	},
+	"autoload": {
+		"psr-0": {
+			"RealCaptcha": "src/"
+		}
+	}
+}
