@@ -5,6 +5,8 @@
  */
 
 * { font-family: sans-serif; }
+a, a:link, a:visited { color: #00f; text-decoration: none; }
+a:hover, a:active { text-decoration: underline; }
 form { display: inline-block; }
 fieldset { display: block; border: 1px solid #666; padding: 0; margin: 0; }
 legend { border: 1px solid #666; padding: 4px; margin: 0 0 0 11px; background-color: #eee; }
@@ -16,4 +18,7 @@ div.buttons { text-align: center; background-color: #eee; padding: 8px; border-t
 div.buttons input { border: 1px solid #666; padding: 2px; background-color: #ccc; }
 div.buttons input:hover { border: 2px solid #8bf; padding: 1px; background-color: #bbb; }
 div.buttons input:active { border: 2px solid #000; padding: 1px; background-color: #8bf; }
-img.captcha { display: block; width: 200px; height: 60px; background-color: #eee; border: 1px solid #666; margin: 4px 0; }
+div#captcha-container { position: relative; }
+ul#captcha-options { display: block; list-style: none; font-size: smaller; position: absolute; bottom: 0; left: 100%; padding: 2px; margin: 0; background-color: #eee; border: 1px solid #666; border-left: none; }
+ul#captcha-options li { display: block; list-style: none; padding: 0; margin: 0; }
+img#captcha-image { display: block; width: 200px; height: 60px; background-color: #eee; border: 1px solid #666; margin: 4px 0; }

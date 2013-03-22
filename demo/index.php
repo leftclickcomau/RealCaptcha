@@ -31,7 +31,14 @@ See the LICENSE and README files in the main source directory for details.
 				</div>
 				<div class="field">
 					<label for="captcha">Captcha:</label>
-					<img src="captcha.php" class="captcha" />
+					<div id="captcha-container" onmouseover="document.getElementById('captcha-options').style.display = 'block';" onmouseout="document.getElementById('captcha-options').style.display = 'none';">
+						<img src="captcha.php?r=<?php echo mt_rand(0, 10000); ?>" id="captcha-image" />
+						<ul id="captcha-options" style="display:none;">
+							<li>Reload...</li>
+							<li><a href="" onclick="document.getElementById('captcha-image').setAttribute('src', 'captcha.php?r=' + Math.floor(Math.random() * 10000) + '&type=mathematical'); return false;">Mathematical</a></li>
+							<li><a href="" onclick="document.getElementById('captcha-image').setAttribute('src', 'captcha.php?r=' + Math.floor(Math.random() * 10000) + '&type=alphanumeric'); return false;">Alphanumeric</a></li>
+						</ul>
+					</div>
 					<input id="captcha" name="captcha" type="text" autocomplete="off" />
 				</div>
 				<div class="buttons">
