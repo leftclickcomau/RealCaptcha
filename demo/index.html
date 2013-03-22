@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Demonstration :: RealCaptcha</title>
+		<style type="text/css">
+			* { font-family: sans-serif; }
+			form { display: inline-block; }
+			fieldset { display: block; border: 1px solid #666; padding: 0; margin: 0; }
+			legend { border: 1px solid #666; padding: 4px; margin: 0 0 0 11px; background-color: #eee; }
+			div.field { padding: 0 16px; margin: 12px 0; }
+			div.field label { display: block; }
+			div.field input { width: 196px; border: 1px solid #666; padding: 2px; margin: 4px 0; }
+			div.field input:focus { border: 1px solid #000; }
+			div.buttons { text-align: center; background-color: #eee; padding: 8px; border-top: 1px solid #666; }
+			div.buttons input { border: 1px solid #666; padding: 2px; background-color: #ccc; }
+			div.buttons input:hover { border: 2px solid #8bf; padding: 1px; background-color: #bbb; }
+			div.buttons input:active { border: 2px solid #000; padding: 1px; background-color: #8bf; }
+			img.captcha { display: block; width: 200px; height: 60px; background-color: #eee; border: 1px solid #666; margin: 4px 0; }
+		</style>
+	</head>
+	<body>
+		<h1>RealCaptcha Demonstration Page</h1>
+		<p>
+		The following is a simple demonstration form, it does not do anything except validation.
+		</p>
+		<form method="post" action="">
+			<fieldset>
+				<legend>Create an Account</legend>
+				<div class="field">
+					<label for="name">Name:</label>
+					<input id="name" name="name" type="text" />
+				</div>
+				<div class="field">
+					<label for="email">Email Address:</label>
+					<input id="email" name="email" type="text" />
+				</div>
+				<div class="field">
+					<label for="password">Password:</label>
+					<input id="password" name="password" type="password" />
+				</div>
+				<div class="field">
+					<label for="captcha">Captcha:</label>
+					<img src="captcha.php" class="captcha" />
+					<input id="captcha" name="captcha" type="text" />
+				</div>
+				<div class="buttons">
+					<input type="submit" value="Submit" />
+					<input type="reset" value="Reset" />
+				</div>
+			</fieldset>
+		</form>
+	</body>
+</html>
