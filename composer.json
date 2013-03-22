@@ -11,6 +11,9 @@
 			"homepage": "http://leftclick.com.au/"
 		}
 	],
+	"require": {
+		"php": ">=5.2"
+	},
 	"autoload": {
 		"psr-0": {
 			"RealCaptcha": "src/"
