@@ -102,16 +102,12 @@ class RealCaptcha {
 	 * @throws \RuntimeException
 	 */
 	public function writeImage() {
-		// Generate the image contents according to the render sequence.
 		$image = $this->prepareImage();
 		foreach ($this->getOption('layers') as $layer) {
-			$className = sprintf(self::CLASS_NAME_FORMAT_LAYER_RENDERER, $layer);
-			/** @var LayerRendererInterface $renderer */
-			$renderer = new $className($this);
-			$renderer->render($image);
+			$this->renderLayer($image, $layer);
 		}
-		// Output to the browser.
 		$this->outputImage($image);
+		$this->cleanupImage($image);
 	}
 
 	/**
@@ -216,15 +212,40 @@ class RealCaptcha {
 	}
 
 	/**
+	 * Wrapper function to render a single named layer.
+	 *
+	 * @param resource $image
+	 * @param string $layer
+	 */
+	protected function renderLayer($image, $layer) {
+		$className = sprintf(self::CLASS_NAME_FORMAT_LAYER_RENDERER, $layer);
+		/** @var LayerRendererInterface $renderer */
+		$renderer = new $className($this);
+		$renderer->render($image);
+	}
+
+	/**
 	 * Send the headers and image contents to the browser.
 	 *
 	 * @param resource $image
+	 *
+	 * @throws \InvalidArgumentException
 	 */
 	protected function outputImage($image) {
-		header('Content-Type: image/jpeg');
+		$format = strtolower($this->getOption('image-format'));
 		header('Cache-Control: no-cache');
 		header('Expires: ' . date('r'));
-		imagejpeg($image);
+		header('Content-Type: image/' . $format);
+		$method = 'image' . $format;
+		$method($image);
+	}
+
+	/**
+	 * Release resources used by the image.
+	 *
+	 * @param resource $image
+	 */
+	protected function cleanupImage($image) {
 		imagedestroy($image);
 	}
 

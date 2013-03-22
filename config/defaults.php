@@ -32,6 +32,11 @@ return array(
 		'height' => 60,
 
 		/**
+		 * Format for the image, must be either 'png', 'jpg' or 'gif'.
+		 */
+		'image-format' => 'png',
+
+		/**
 		 * Background colour for the image.
 		 */
 		'background-colour' => array(
