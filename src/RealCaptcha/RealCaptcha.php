@@ -139,7 +139,7 @@ class RealCaptcha {
 			imageline($image, $x0, $y0, $x1, $y1, $noiseColour);
 		}
 		// Create a text bounding box and add text.
-		$font = $this->getOption('font');
+		$font = sprintf('%s/%s', $this->getOption('font-path'), $this->getOption('font'));
 		if (!($textBoundingBox = imagettfbbox($fontSize, 0, $font, $this->code))) {
 			throw new \RuntimeException('RealCaptcha encountered an error calling imagettfbbox() function.');
 		}

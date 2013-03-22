@@ -65,6 +65,11 @@ return array(
 		),
 
 		/**
+		 * Path to the directory containing TTF font files.
+		 */
+		'font-path' => '../../fonts',
+
+		/**
 		 * Font filename, must be a valid TTF file.
 		 */
 		'font' => 'monofont.ttf',
