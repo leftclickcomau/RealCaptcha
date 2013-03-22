@@ -16,6 +16,12 @@ return array(
 	'base' => array(
 
 		/**
+		 * Namespace for session storage, allows multiple captchas on the same page, not required if only using one
+		 * captcha per page.
+		 */
+		'namespace' => null,
+
+		/**
 		 * Width of the generated image, in pixels.
 		 */
 		'width' => 200,
@@ -23,61 +29,124 @@ return array(
 		/**
 		 * Height of the generated image, in pixels.
 		 */
-		'height' => 40,
+		'height' => 60,
 
 		/**
 		 * Background colour for the image.
 		 */
 		'background-colour' => array(
-			'red' => 255,
-			'green' => 255,
-			'blue' => 255
+			'red' => 238,
+			'green' => 238,
+			'blue' => 238
 		),
 
 		/**
-		 * Colour for text.
+		 * Sequence of rendering elements, items later in the list will be rendered over the top of preceding items.
+		 * Note that items can be used multiple times, or not at all, except the 'code' item, which should be used
+		 * exactly once.  Available items: 'code', 'shapes', 'lines', 'dots'.
 		 */
-		'text-colour' => array(
-			'red' => 20,
-			'green' => 40,
-			'blue' => 100
+		'render-sequence' => array(
+			'shapes',
+			'dots',
+			'code',
+			'lines'
 		),
 
 		/**
-		 * Colour for noise dots, lines and shapes.
+		 * Path settings.
 		 */
-		'noise-colour' => array(
-			'red' => 100,
-			'green' => 120,
-			'blue' => 180
-		),
-
-		'noise-dots' => array(
-			'divisor' => 3,
-			'min' => 0,
-			'max' => 100
-		),
-
-		'noise-lines' => array(
-			'divisor' => 150,
-			'min' => 0,
-			'max' => 15
+		'paths' => array(
+			/**
+			 * Path to the directory containing TTF font files.
+			 */
+			'font' => __DIR__ . '/../fonts',
 		),
 
 		/**
-		 * Path to the directory containing TTF font files.
+		 * Details for rendering text.
 		 */
-		'font-path' => '../../fonts',
+		'text' => array(
+			/**
+			 * Text colour.
+			 */
+			'colour' => array(
+				'red' => 0,
+				'green' => 0,
+				'blue' => 0
+			),
+			/**
+			 * Font filename, must be a valid TTF filename, or an array of TTF filenames, within 'font-path' (without any
+			 * filename extension).
+			 */
+			'font' => array(
+				'monofont',
+				'wavy'
+			),
+			/**
+			 * Ratio between the height of the image and the font size setting.
+			 */
+			'font-size-ratio' => 0.5,
+			/**
+			 * Minimum and maximum angle for the text, in degrees.
+			 */
+			'angle' => array(
+				'min' => -15,
+				'max' => 15
+			)
+		),
 
 		/**
-		 * Font filename, must be a valid TTF file.
+		 * Details for rendering dots, lines and shapes as noise.
 		 */
-		'font' => 'monofont.ttf',
-
-		/**
-		 * Ratio between the height of the image and the font size setting.
-		 */
-		'font-size-ratio' => 0.75
+		'noise' => array(
+			/**
+			 * Settings for dots.
+			 */
+			'dots' => array(
+				'divisor' => 3,
+				'min' => 0,
+				'max' => 100
+			),
+			/**
+			 * Settings for lines.
+			 */
+			'lines' => array(
+				'divisor' => 250,
+				'min' => 0,
+				'max' => 10
+			),
+			/**
+			 * Settings for shapes (rectangles, ellipses, arcs).
+			 */
+			'shapes' => array(
+				'divisor' => 500,
+				'min' => 0,
+				'max' => 5,
+				'size-divisor' => 3,
+				'distribution' => array(
+					array(
+						'shape' => 'rectangle',
+						'weight' => 10
+					),
+					array(
+						'shape' => 'ellipse',
+						'weight' => 7
+					),
+					array(
+						'shape' => 'arc',
+						'weight' => 3
+					)
+				)
+			),
+			/**
+			 * Colour for noise shapes.
+			 */
+			'colour' => array(
+				'red' => array( 'min' => 0, 'max' => 255 ),
+				'green' => array( 'min' => 0, 'max' => 255 ),
+				'blue' => array( 'min' => 0, 'max' => 255 )
+			)
+		)
 	),
 
 	/**
