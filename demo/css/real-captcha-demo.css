@@ -5,8 +5,13 @@
  */
 
 * { font-family: sans-serif; }
+body { background-color: #ccc; }
+#container { width: 1000px; margin: 16px auto; padding: 16px; border: 2px solid #aaa; background-color: #fff; box-sizing: border-box; box-shadow: #666 0 0 64px; }
+address { width: 1000px; margin: 16px auto; padding: 16px; font-style: normal; font-size: small; }
 a, a:link, a:visited { color: #00f; text-decoration: none; }
 a:hover, a:active { text-decoration: underline; }
+h1 { font-size: 1.5em; color: #666; font-weight: bold; }
+dd { margin-bottom: 1em; }
 form { display: inline-block; }
 fieldset { display: block; border: 1px solid #666; padding: 0; margin: 0; }
 legend { border: 1px solid #666; padding: 4px; margin: 0 0 0 11px; background-color: #eee; }

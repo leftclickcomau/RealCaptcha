@@ -10,49 +10,34 @@ See the LICENSE and README files in the main source directory for details.
 		<link rel="stylesheet" type="text/css" href="css/real-captcha-demo.css" />
 	</head>
 	<body>
-		<h1>RealCaptcha Demonstration Page</h1>
-		<p>
-		The following is a simple demonstration form, it does not do anything except validation.
-		</p>
-		<form method="post" action="captcha-check.php">
-			<fieldset>
-				<legend>Create an Account</legend>
-				<div class="field">
-					<label for="name">Name:</label>
-					<input id="name" name="name" type="text" />
-				</div>
-				<div class="field">
-					<label for="email">Email Address:</label>
-					<input id="email" name="email" type="text" />
-				</div>
-				<div class="field">
-					<label for="password">Password:</label>
-					<input id="password" name="password" type="password" />
-				</div>
-				<div class="field">
-					<label for="captcha">Captcha:</label>
-					<div id="captcha-container" onmouseover="document.getElementById('captcha-options').style.display = 'block';" onmouseout="document.getElementById('captcha-options').style.display = 'none';">
-						<img src="" id="captcha-image" />
-						<ul id="captcha-options" style="display:none;">
-							<li>Reload...</li>
-							<li><a href="" onclick="document.getElementById('captcha-image').setAttribute('src', 'captcha.php?r=' + Math.floor(Math.random() * 10000) + '&amp;type=Alphanumeric'); document.cookie = 'captcha-type=Alphanumeric'; return false;">Alphanumeric</a></li>
-							<li><a href="" onclick="document.getElementById('captcha-image').setAttribute('src', 'captcha.php?r=' + Math.floor(Math.random() * 10000) + '&amp;type=Mathematical'); document.cookie = 'captcha-type=Mathematical'; return false;">Mathematical</a></li>
-						</ul>
-					</div>
-					<input id="captcha" name="captcha" type="text" autocomplete="off" />
-				</div>
-				<div class="buttons">
-					<input type="submit" value="Submit" />
-					<input type="reset" value="Reset" />
-				</div>
-			</fieldset>
-		</form>
-		<script type="text/javascript">//<![CDATA
-			window.onload = function() {
-				var regex = new RegExp("(?:^|.*;\\s*)captcha-type\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"),
-					type = document.cookie.match(regex) ? document.cookie.replace(regex, "$1") : null;
-				document.getElementById('captcha-image').setAttribute('src', 'captcha.php?r=' + Math.floor(Math.random() * 10000) + (type ? '&type=' + type : ''));
-			};
-		//]]></script>
+		<div id="container">
+			<h1>RealCaptcha Demonstration Index</h1>
+			<p>
+			Please select a demonstration below:
+			</p>
+			<dl>
+				<dt>
+					<a href="alphanumeric.php">Basic Demonstration - Alphanumeric Captcha</a>
+				</dt>
+				<dd>
+					Basic demonstration using an alphanumeric type captcha image.
+				</dd>
+				<dt>
+					<a href="mathematical.php">Basic Demonstration - Mathematical Captcha</a>
+				</dt>
+				<dd>
+					Basic demonstration using an mathematical type captcha image.
+				</dd>
+				<dt>
+					<a href="dynamic.php">Dynamic Demonstration</a>
+				</dt>
+				<dd>
+					Allows switching between captcha types and reloading of captcha types and uses browser cookies to remember type selection between page loads.
+				</dd>
+			</dl>
+		</div>
+		<address>
+			RealCaptcha is an open source library provided by <a href="http://leftclick.com.au/">Leftclick.com.au</a>.
+		</address>
 	</body>
 </html>
