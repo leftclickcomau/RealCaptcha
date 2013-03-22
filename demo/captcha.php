@@ -6,8 +6,9 @@
  */
 
 /**
- * RealCaptcha bootstrap.
+ * RealCaptcha bootstrap demonstration.
  */
+include '../vendor/autoload.php';
 $type = isset($_GET['type']) ? $_GET['type'] : \RealCaptcha\RealCaptcha::TYPE_ALPHANUMERIC;
 $options = $_GET;
 unset($options['type']);
