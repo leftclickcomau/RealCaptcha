@@ -148,21 +148,29 @@ class RealCaptcha {
 	//-- Internal Methods --------------------
 
 	/**
-	 * Initialise the session, if it needs to be and it is possible.
+	 * Initialise the session, if it needs to be and if it is possible.
 	 *
 	 * @throws \RuntimeException
 	 */
 	protected function initSession() {
 		/** @noinspection PhpVoidFunctionResultUsedInspection Issue with PhpStorm 6.0 */
-		switch (session_status()) {
-			case PHP_SESSION_ACTIVE:
-				// Do nothing, session is already started.
-				break;
-			case PHP_SESSION_NONE:
-				session_start();
-				break;
-			case PHP_SESSION_DISABLED:
-				throw new \RuntimeException('RealCaptcha requires sessions to be enabled.');
+		$startSession = false;
+		if (is_callable('session_status')) {
+			switch (session_status()) {
+				case PHP_SESSION_ACTIVE:
+					// Do nothing, session is already started.
+					break;
+				case PHP_SESSION_NONE:
+					$startSession = true;
+					break;
+				case PHP_SESSION_DISABLED:
+					throw new \RuntimeException('RealCaptcha requires sessions to be enabled.');
+			}
+		} elseif (session_id() === '') {
+			$startSession = true;
+		}
+		if ($startSession) {
+			session_start();
 		}
 	}
 

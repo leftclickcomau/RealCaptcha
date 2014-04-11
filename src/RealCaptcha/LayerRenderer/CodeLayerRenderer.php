@@ -25,7 +25,8 @@ class CodeLayerRenderer extends AbstractLayerRenderer {
 		$text = $this->getCaptcha()->getOption('text');
 		$angle = mt_rand($text['angle']['min'], $text['angle']['max']);
 		$font = is_array($text['font']) ? $text['font'][mt_rand(0, sizeof($text['font']) - 1)] : $text['font'];
-		$fontPath = sprintf('%s/%s.ttf', $this->getCaptcha()->getOption('paths')['font'], $font);
+		$paths = $this->getCaptcha()->getOption('paths');
+		$fontPath = sprintf('%s/%s.ttf', $paths['font'], $font);
 		$fontSize = min($height * $text['font-size-ratio']['height'], $width * $text['font-size-ratio']['width']);
 		$code = $this->getCaptcha()->generateCode();
 		if (!($textBoundingBox = imagettfbbox($fontSize, $angle, $fontPath, $code['display']))) {

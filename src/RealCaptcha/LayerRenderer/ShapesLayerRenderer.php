@@ -66,7 +66,8 @@ class ShapesLayerRenderer extends AbstractLayerRenderer {
 	protected function selectShape($distribution) {
 		$rand = mt_rand(0, array_sum(array_map(function($item) { return $item['weight']; }, $distribution)) - 1);
 		while ($rand >= $distribution[0]['weight']) {
-			$rand -= array_shift($distribution)['weight'];
+			$distributionItem = array_shift($distribution);
+			$rand -= $distributionItem['weight'];
 		}
 		return $distribution[0]['shape'];
 	}
