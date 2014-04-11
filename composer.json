@@ -2,7 +2,7 @@
 	"name": "leftclick/real-captcha",
 	"display-name": "RealCaptcha",
 	"description": "Easy to implement captcha mechanism.",
-	"version": "0.0.1-dev",
+	"version": "0.0.2",
 	"license": "MIT",
 	"authors": [
 		{
