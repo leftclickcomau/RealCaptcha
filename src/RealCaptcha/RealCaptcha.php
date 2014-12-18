@@ -167,7 +167,6 @@ class RealCaptcha {
 	 * @throws \RuntimeException
 	 */
 	protected function initSession() {
-		/** @noinspection PhpVoidFunctionResultUsedInspection Issue with PhpStorm 6.0 */
 		$startSession = false;
 		if (is_callable('session_status')) {
 			switch (session_status()) {
@@ -206,6 +205,7 @@ class RealCaptcha {
 	 * @return array
 	 */
 	protected function mergeOptions(array $options=null) {
+		/** @noinspection PhpIncludeInspection */
 		$defaults = require sprintf('%s/%s', __DIR__, self::PATH_DEFAULTS);
 		if (!isset($options['type'])) {
 			$options['type'] = self::TYPE_ALPHANUMERIC;
