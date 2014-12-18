@@ -35,7 +35,7 @@ class MathematicalCodeGenerator extends AbstractCodeGenerator {
 		for ($i=0, $l=$length; $i<$l; $i++) {
 			$components[] = mt_rand($min, $max);
 			if ($i < $l - 1) {
-				$components[] = substr($operators, mt_rand(0, 2), 1);
+				$components[] = substr($operators, mt_rand(0, strlen($operators) - 1), 1);
 			}
 		}
 		$code = array( 'display' => implode('', $components) );
