@@ -83,7 +83,11 @@ class RealCaptcha {
 	 * @return mixed|null
 	 */
 	public function getOption($key) {
-		return isset($this->options[$key]) ? $this->options[$key] : null;
+		$options = $this->options;
+		foreach (explode('.', $key) as $parentKey) {
+			$options = is_array($options) && isset($options[$parentKey]) ? $options[$parentKey] : null;
+		}
+		return $options;
 	}
 
 	/**
