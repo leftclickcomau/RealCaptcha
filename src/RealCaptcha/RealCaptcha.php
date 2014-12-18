@@ -83,7 +83,11 @@ class RealCaptcha {
 	 * @return mixed|null
 	 */
 	public function getOption($key) {
-		return isset($this->options[$key]) ? $this->options[$key] : null;
+		$options = $this->options;
+		foreach (explode('.', $key) as $parentKey) {
+			$options = is_array($options) && isset($options[$parentKey]) ? $options[$parentKey] : null;
+		}
+		return $options;
 	}
 
 	/**
@@ -93,7 +97,17 @@ class RealCaptcha {
 	 * @param mixed $value
 	 */
 	public function setOption($key, $value) {
-		$this->options[$key] = $value;
+		$options = $this->options;
+		$keys = explode('.', $key);
+		$childKey = array_pop($keys);
+		foreach ($keys as $parentKey) {
+			$options = isset($options[$parentKey]) ? $options[$parentKey] : array();
+		}
+		$options[$childKey] = $value;
+		foreach (array_reverse($keys) as $parentKey) {
+			$options = array( $parentKey => $options );
+		}
+		$this->options = array_merge($this->options, $options);
 	}
 
 	/**
@@ -196,7 +210,7 @@ class RealCaptcha {
 		if (!isset($options['type'])) {
 			$options['type'] = self::TYPE_ALPHANUMERIC;
 		}
-		return array_merge(
+		return array_merge_recursive(
 			$defaults['base'],
 			$defaults[strtolower($options['type'])],
 			$options ?: array()
