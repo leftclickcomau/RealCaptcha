@@ -18,14 +18,28 @@ namespace RealCaptcha\CodeGenerator;
 class MathematicalCodeGenerator extends AbstractCodeGenerator {
 
 	public function generateCode() {
+    $length = $this->getOption('length');
+    if (!is_int($length) || $length <= 0) {
+      throw new \RuntimeException('Must specify an integer length greater than zero.');
+    }
+
+    $operators = $this->getOption('operators');
+    if (strlen($operators) === 0) {
+      throw new \RuntimeException('Cannot generate a mathematical expression without operators.');
+    }
+
+    $min = $this->getOption('min-value');
+    $max = $this->getOption('max-value');
+
 		$components = array();
-		for ($i=0, $l=$this->getCaptcha()->getOption('length'); $i<$l; $i++) {
-			$components[] = mt_rand($this->getCaptcha()->getOption('min-value'), $this->getCaptcha()->getOption('max-value'));
+		for ($i=0, $l=$length; $i<$l; $i++) {
+			$components[] = mt_rand($min, $max);
 			if ($i < $l - 1) {
-				$components[] = substr($this->getCaptcha()->getOption('operators'), mt_rand(0, 2), 1);
+				$components[] = substr($operators, mt_rand(0, 2), 1);
 			}
 		}
 		$code = array( 'display' => implode('', $components) );
+
 		eval('$code["result"] = ' . $code['display'] . ';');
 		return $code;
 	}

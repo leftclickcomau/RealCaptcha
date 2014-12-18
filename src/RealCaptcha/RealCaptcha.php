@@ -19,7 +19,7 @@ use RealCaptcha\Util\ColourUtilities;
  *
  * @package RealCaptcha
  */
-class RealCaptcha {
+class RealCaptcha implements OptionsInterface {
 
 	//-- Constants --------------------
 
@@ -73,15 +73,8 @@ class RealCaptcha {
 		$this->initSession();
 	}
 
-	//-- Public Methods --------------------
+	//-- OptionsInterface Methods --------------------
 
-	/**
-	 * Retrieve the option with the given key.
-	 *
-	 * @param string $key
-	 *
-	 * @return mixed|null
-	 */
 	public function getOption($key) {
 		$options = $this->options;
 		foreach (explode('.', $key) as $parentKey) {
@@ -90,12 +83,6 @@ class RealCaptcha {
 		return $options;
 	}
 
-	/**
-	 * Set the option with the given key to the specified value.
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 */
 	public function setOption($key, $value) {
 		$options = $this->options;
 		$keys = explode('.', $key);
@@ -110,11 +97,8 @@ class RealCaptcha {
 		$this->options = array_merge($this->options, $options);
 	}
 
-	/**
-	 * Write the JPEG image data to standard output.
-	 *
-	 * @throws \RuntimeException
-	 */
+	//-- CaptchaInterface Methods --------------------
+
 	public function writeImage() {
 		$image = $this->prepareImage();
 		foreach ($this->getOption('layers') as $layer) {
@@ -124,13 +108,6 @@ class RealCaptcha {
 		$this->cleanupImage($image);
 	}
 
-	/**
-	 * Generate the code for this captcha, and store it in the session.
-	 *
-	 * @return string
-	 *
-	 * @throws \InvalidArgumentException
-	 */
 	public function generateCode() {
 		$className = sprintf(self::CLASS_NAME_FORMAT_CODE_GENERATOR, $this->getOption('type'));
 		/** @var CodeGeneratorInterface $generator */
@@ -140,14 +117,6 @@ class RealCaptcha {
 		return $code;
 	}
 
-	/**
-	 * Compare the specified code against the code stored in the session, and remove the code from the session as it
-	 * should only ever be checked once.
-	 *
-	 * @param string $code
-	 *
-	 * @return boolean
-	 */
 	public function checkCode($code) {
 		$sessionKey = $this->getSessionKey();
 		if (!isset($_SESSION[$sessionKey])) {
