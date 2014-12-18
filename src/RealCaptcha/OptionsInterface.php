@@ -22,7 +22,7 @@ interface OptionsInterface {
  	 *
  	 * @param string $key
  	 *
- 	 * @return mixed|null
+   * @return mixed|null
  	 */
  	public function getOption($key);
 
@@ -30,7 +30,6 @@ interface OptionsInterface {
  	 * Set the option with the given key to the specified value.
  	 *
  	 * @param string $key
- 	 * @param mixed $value
  	 */
  	public function setOption($key, $value);
 
