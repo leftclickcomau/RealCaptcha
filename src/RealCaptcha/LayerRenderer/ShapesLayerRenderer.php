@@ -10,8 +10,7 @@
 
 namespace RealCaptcha\LayerRenderer;
 
-use RealCaptcha\LayerRenderer\AbstractLayerRenderer;
-use RealCaptcha\RealCaptcha;
+use RealCaptcha\CaptchaInterface;
 use RealCaptcha\Util\ColourUtilities;
 
 class ShapesLayerRenderer extends AbstractLayerRenderer {
@@ -19,10 +18,10 @@ class ShapesLayerRenderer extends AbstractLayerRenderer {
 	/**
 	 * @inheritdoc
 	 */
-	public function render($image) {
-		$width = $this->getCaptcha()->getOption('width');
-		$height = $this->getCaptcha()->getOption('height');
-		$noise = $this->getCaptcha()->getOption('noise');
+	public function render($image, CaptchaInterface $captcha) {
+		$width = $this->getOption('width');
+		$height = $this->getOption('height');
+		$noise = $this->getOption('noise');
 		$shapesCount = max($noise['shapes']['min'], min($noise['shapes']['max'], ($width * $height) / $noise['shapes']['divisor']));
 		for ($i=0; $i<$shapesCount; $i++) {
 			$colour = ColourUtilities::createColour($image, $noise['colour']);

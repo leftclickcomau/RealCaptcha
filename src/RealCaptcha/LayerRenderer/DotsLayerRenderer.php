@@ -10,8 +10,7 @@
 
 namespace RealCaptcha\LayerRenderer;
 
-use RealCaptcha\LayerRenderer\AbstractLayerRenderer;
-use RealCaptcha\RealCaptcha;
+use RealCaptcha\CaptchaInterface;
 use RealCaptcha\Util\ColourUtilities;
 
 class DotsLayerRenderer extends AbstractLayerRenderer {
@@ -19,10 +18,10 @@ class DotsLayerRenderer extends AbstractLayerRenderer {
 	/**
 	 * @inheritdoc
 	 */
-	public function render($image) {
-		$width = $this->getCaptcha()->getOption('width');
-		$height = $this->getCaptcha()->getOption('height');
-		$noise = $this->getCaptcha()->getOption('noise');
+	public function render($image, CaptchaInterface $captcha) {
+		$width = $this->getOption('width');
+		$height = $this->getOption('height');
+		$noise = $this->getOption('noise');
 		$dotsCount = max($noise['dots']['min'], min($noise['dots']['max'], ($width * $height) / $noise['dots']['divisor']));
 		for ($i=0; $i<$dotsCount; $i++) {
 			$x = mt_rand(0, $width);

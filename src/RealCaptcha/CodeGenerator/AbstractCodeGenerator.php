@@ -10,7 +10,7 @@
 
 namespace RealCaptcha\CodeGenerator;
 
-use RealCaptcha\RealCaptcha;
+use RealCaptcha\OptionsInterface;
 
 /**
  * Abstract implementation of CodeGeneratorInterface, providing access to options via the RealCaptcha object.
@@ -22,28 +22,30 @@ abstract class AbstractCodeGenerator implements CodeGeneratorInterface {
 	//-- Attributes --------------------
 
 	/**
-	 * @var RealCaptcha
+	 * @var OptionsInterface
 	 */
-	private $captcha;
+	private $options;
 
 	//-- Constructor --------------------
 
 	/**
-	 * @param RealCaptcha $captcha
+	 * @param OptionsInterface $options
 	 */
-	public function __construct(RealCaptcha $captcha) {
-		$this->captcha = $captcha;
+	public function __construct(OptionsInterface $options) {
+		$this->options = $options;
 	}
 
 	//-- Internal Methods --------------------
 
 	/**
-	 * Retrieve the RealCaptcha reference.
-	 *
-	 * @return RealCaptcha
+	 * Proxy to the getOption() method in the OptionsInterface implementation.
+   *
+   * @param string $key
+   *
+   * @return mixed
 	 */
-	protected function getCaptcha() {
-		return $this->captcha;
+	protected function getOption($key) {
+		return $this->options->getOption($key);
 	}
 
 }

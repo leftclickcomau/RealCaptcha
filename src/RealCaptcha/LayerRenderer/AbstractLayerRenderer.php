@@ -11,6 +11,7 @@
 namespace RealCaptcha\LayerRenderer;
 
 use RealCaptcha\LayerRenderer\LayerRendererInterface;
+use RealCaptcha\OptionsInterface;
 use RealCaptcha\RealCaptcha;
 
 /**
@@ -23,28 +24,30 @@ abstract class AbstractLayerRenderer implements LayerRendererInterface {
 	//-- Attributes --------------------
 
 	/**
-	 * @var RealCaptcha
+	 * @var OptionsInterface
 	 */
-	private $captcha;
+	private $options;
 
 	//-- Constructor --------------------
 
 	/**
-	 * @param RealCaptcha $captcha
+	 * @param OptionsInterface $options
 	 */
-	public function __construct(RealCaptcha $captcha) {
-		$this->captcha = $captcha;
+	public function __construct(OptionsInterface $options) {
+		$this->options = $options;
 	}
 
 	//-- Internal Methods --------------------
 
-	/**
-	 * Retrieve the RealCaptcha reference.
-	 *
-	 * @return RealCaptcha
-	 */
-	public function getCaptcha() {
-		return $this->captcha;
-	}
+  /**
+ 	 * Proxy to the getOption() method in the OptionsInterface implementation.
+    *
+    * @param string $key
+    *
+    * @return mixed
+ 	 */
+ 	protected function getOption($key) {
+ 		return $this->options->getOption($key);
+ 	}
 
 }

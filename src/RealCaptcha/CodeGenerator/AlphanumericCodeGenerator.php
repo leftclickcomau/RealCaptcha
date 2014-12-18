@@ -18,10 +18,21 @@ namespace RealCaptcha\CodeGenerator;
 class AlphanumericCodeGenerator extends AbstractCodeGenerator {
 
 	public function generateCode() {
+    $length = $this->getOption('length');
+    if (!is_int($length) || $length <= 0) {
+      throw new \RuntimeException('Must specify an integer length greater than zero.');
+    }
+
+    $characters = $this->getOption('characters');
+    if (!is_string($characters) || strlen($characters) === 0) {
+      throw new \RuntimeException('Must specify at least one character to generate the code from.');
+    }
+
 		$code = array( 'display' => '' );
-		for ($i=0, $max=strlen($this->getCaptcha()->getOption('characters'))-1; $i<$this->getCaptcha()->getOption('length'); $i++) {
-			$code['display'] .= substr($this->getCaptcha()->getOption('characters'), mt_rand(0, $max), 1);
+		for ($i=0, $max=strlen($characters)-1; $i<$length; $i++) {
+			$code['display'] .= substr($characters, mt_rand(0, $max), 1);
 		}
+
 		$code['result'] = $code['display'];
 		return $code;
 	}

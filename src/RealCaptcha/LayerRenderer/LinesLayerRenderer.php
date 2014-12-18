@@ -10,8 +10,7 @@
 
 namespace RealCaptcha\LayerRenderer;
 
-use RealCaptcha\LayerRenderer\AbstractLayerRenderer;
-use RealCaptcha\RealCaptcha;
+use RealCaptcha\CaptchaInterface;
 use RealCaptcha\Util\ColourUtilities;
 
 class LinesLayerRenderer extends AbstractLayerRenderer {
@@ -19,10 +18,10 @@ class LinesLayerRenderer extends AbstractLayerRenderer {
 	/**
 	 * @inheritdoc
 	 */
-	public function render($image) {
-		$width = $this->getCaptcha()->getOption('width');
-		$height = $this->getCaptcha()->getOption('height');
-		$noise = $this->getCaptcha()->getOption('noise');
+	public function render($image, CaptchaInterface $captcha) {
+		$width = $this->getOption('width');
+		$height = $this->getOption('height');
+		$noise = $this->getOption('noise');
 		$linesCount = max($noise['lines']['min'], min($noise['lines']['max'], ($width * $height) / $noise['lines']['divisor']));
 		for ($i=0; $i<$linesCount; $i++) {
 			$x0 = mt_rand(0, $width);

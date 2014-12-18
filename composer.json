@@ -14,6 +14,9 @@
 	"require": {
 		"php": ">=5.2"
 	},
+	"require-dev": {
+		"phpunit/phpunit": "*"
+	},
 	"autoload": {
 		"psr-0": {
 			"RealCaptcha": "src/"

@@ -10,6 +10,8 @@
 
 namespace RealCaptcha\LayerRenderer;
 
+use RealCaptcha\CaptchaInterface;
+
 /**
  * Defines the behaviour of an object responsible for drawing a single layer onto an image.
  *
@@ -21,9 +23,10 @@ interface LayerRendererInterface {
 	 * Draw the layer onto the given image.
 	 *
 	 * @param resource $image
+   * @param CaptchaInterface $captcha
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function render($image);
+	public function render($image, CaptchaInterface $captcha);
 
 }
