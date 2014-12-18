@@ -69,8 +69,37 @@ class RealCaptcha implements OptionsInterface, CaptchaInterface {
 	 * @throws \RuntimeException
 	 */
 	public function __construct(array $options=null) {
-		$this->options = $this->mergeOptions($options);
-		$this->initSession();
+    // Merge options into defaults
+    /** @noinspection PhpIncludeInspection */
+    $defaults = require sprintf('%s/%s', __DIR__, self::PATH_DEFAULTS);
+    if (!isset($options['type'])) {
+      $options['type'] = self::TYPE_ALPHANUMERIC;
+    }
+    $this->options = array_merge_recursive(
+      $defaults['base'],
+      $defaults[strtolower($options['type'])],
+      $options ?: array()
+    );
+
+    // Start session if required
+    $startSession = false;
+    if (is_callable('session_status')) {
+      switch (session_status()) {
+        case PHP_SESSION_ACTIVE:
+          // Do nothing, session is already started.
+          break;
+        case PHP_SESSION_NONE:
+          $startSession = true;
+          break;
+        case PHP_SESSION_DISABLED:
+          throw new \RuntimeException('RealCaptcha requires sessions to be enabled.');
+      }
+    } elseif (session_id() === '') {
+      $startSession = true;
+    }
+    if ($startSession) {
+      session_start();
+    }
 	}
 
 	//-- OptionsInterface Methods --------------------
@@ -100,12 +129,28 @@ class RealCaptcha implements OptionsInterface, CaptchaInterface {
 	//-- CaptchaInterface Methods --------------------
 
 	public function writeImage() {
-		$image = $this->prepareImage();
+    $width = intval($this->getOption('width'));
+ 		$height = intval($this->getOption('height'));
+    if (!($image = imagecreate($width, $height))) {
+      throw new \RuntimeException('RealCaptcha could not create image');
+    }
+    $colour = ColourUtilities::createColour($image, $this->getOption('background-colour'));
+    imagefilledrectangle($image, 0, 0, $width, $height, $colour);
+
 		foreach ($this->getOption('layers') as $layer) {
-			$this->renderLayer($image, $layer);
+      $className = sprintf(self::CLASS_NAME_FORMAT_LAYER_RENDERER, $layer);
+      /** @var LayerRendererInterface $renderer */
+      $renderer = new $className($this);
+      $renderer->render($image, $this);
 		}
-		$this->outputImage($image);
-		$this->cleanupImage($image);
+
+    $format = strtolower($this->getOption('image-format'));
+    header('Cache-Control: no-cache');
+    header('Expires: ' . date('r'));
+    header('Content-Type: image/' . $format);
+    $method = 'image' . $format;
+    $method($image);
+    imagedestroy($image);
 	}
 
 	public function generateCode() {
@@ -130,114 +175,9 @@ class RealCaptcha implements OptionsInterface, CaptchaInterface {
 
 	//-- Internal Methods --------------------
 
-	/**
-	 * Initialise the session, if it needs to be and if it is possible.
-	 *
-	 * @throws \RuntimeException
-	 */
-	protected function initSession() {
-		$startSession = false;
-		if (is_callable('session_status')) {
-			switch (session_status()) {
-				case PHP_SESSION_ACTIVE:
-					// Do nothing, session is already started.
-					break;
-				case PHP_SESSION_NONE:
-					$startSession = true;
-					break;
-				case PHP_SESSION_DISABLED:
-					throw new \RuntimeException('RealCaptcha requires sessions to be enabled.');
-			}
-		} elseif (session_id() === '') {
-			$startSession = true;
-		}
-		if ($startSession) {
-			session_start();
-		}
-	}
-
-	/**
-	 * Generate the session key based on the configured namespace.
-	 *
-	 * @return string
-	 */
-	protected function getSessionKey() {
-		$namespace = $this->getOption('namespace');
-		return empty($namespace) ? self::SESSION_KEY_BASE_CODE : sprintf('%s.%s', $namespace, self::SESSION_KEY_BASE_CODE);
-	}
-
-	/**
-	 * Merge the options into the defaults including per-type defaults.
-	 *
-	 * @param array|null $options
-	 *
-	 * @return array
-	 */
-	protected function mergeOptions(array $options=null) {
-		/** @noinspection PhpIncludeInspection */
-		$defaults = require sprintf('%s/%s', __DIR__, self::PATH_DEFAULTS);
-		if (!isset($options['type'])) {
-			$options['type'] = self::TYPE_ALPHANUMERIC;
-		}
-		return array_merge_recursive(
-			$defaults['base'],
-			$defaults[strtolower($options['type'])],
-			$options ?: array()
-		);
-	}
-
-	/**
-	 * Prepare the image for drawing.
-	 *
-	 * @throws \RuntimeException
-	 */
-	protected function prepareImage() {
-		$width = intval($this->getOption('width'));
-		$height = intval($this->getOption('height'));
-		if (!($image = imagecreate($width, $height))) {
-			throw new \RuntimeException('RealCaptcha could not create image');
-		}
-		$colour = ColourUtilities::createColour($image, $this->getOption('background-colour'));
-		imagefilledrectangle($image, 0, 0, $width, $height, $colour);
-		return $image;
-	}
-
-	/**
-	 * Wrapper function to render a single named layer.
-	 *
-	 * @param resource $image
-	 * @param string $layer
-	 */
-	protected function renderLayer($image, $layer) {
-		$className = sprintf(self::CLASS_NAME_FORMAT_LAYER_RENDERER, $layer);
-		/** @var LayerRendererInterface $renderer */
-		$renderer = new $className($this);
-    $renderer->render($image, $this);
-	}
-
-	/**
-	 * Send the headers and image contents to the browser.
-	 *
-	 * @param resource $image
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	protected function outputImage($image) {
-		$format = strtolower($this->getOption('image-format'));
-		header('Cache-Control: no-cache');
-		header('Expires: ' . date('r'));
-		header('Content-Type: image/' . $format);
-		$method = 'image' . $format;
-		$method($image);
-	}
-
-	/**
-	 * Release resources used by the image.
-	 *
-	 * @param resource $image
-	 */
-	protected function cleanupImage($image) {
-		imagedestroy($image);
-	}
+ 	protected function getSessionKey() {
+ 		$namespace = $this->getOption('namespace');
+ 		return empty($namespace) ? self::SESSION_KEY_BASE_CODE : sprintf('%s.%s', $namespace, self::SESSION_KEY_BASE_CODE);
+ 	}
 
 }
