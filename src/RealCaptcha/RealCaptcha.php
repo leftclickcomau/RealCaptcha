@@ -19,7 +19,7 @@ use RealCaptcha\Util\ColourUtilities;
  *
  * @package RealCaptcha
  */
-class RealCaptcha implements OptionsInterface {
+class RealCaptcha implements OptionsInterface, CaptchaInterface {
 
 	//-- Constants --------------------
 
@@ -192,8 +192,8 @@ class RealCaptcha implements OptionsInterface {
 	 * @throws \RuntimeException
 	 */
 	protected function prepareImage() {
-		$width = $this->getOption('width');
-		$height = $this->getOption('height');
+		$width = intval($this->getOption('width'));
+		$height = intval($this->getOption('height'));
 		if (!($image = imagecreate($width, $height))) {
 			throw new \RuntimeException('RealCaptcha could not create image');
 		}
@@ -212,7 +212,7 @@ class RealCaptcha implements OptionsInterface {
 		$className = sprintf(self::CLASS_NAME_FORMAT_LAYER_RENDERER, $layer);
 		/** @var LayerRendererInterface $renderer */
 		$renderer = new $className($this);
-		$renderer->render($image);
+    $renderer->render($image, $this);
 	}
 
 	/**

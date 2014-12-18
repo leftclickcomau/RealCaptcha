@@ -10,8 +10,7 @@
 
 namespace RealCaptcha\LayerRenderer;
 
-use RealCaptcha\LayerRenderer\AbstractLayerRenderer;
-use RealCaptcha\RealCaptcha;
+use RealCaptcha\CaptchaInterface;
 use RealCaptcha\Util\ColourUtilities;
 
 class CodeLayerRenderer extends AbstractLayerRenderer {
@@ -19,16 +18,16 @@ class CodeLayerRenderer extends AbstractLayerRenderer {
 	/**
 	 * @inheritdoc
 	 */
-	public function render($image) {
-		$width = $this->getCaptcha()->getOption('width');
-		$height = $this->getCaptcha()->getOption('height');
-		$text = $this->getCaptcha()->getOption('text');
+	public function render($image, CaptchaInterface $captcha) {
+		$width = $this->getOption('width');
+		$height = $this->getOption('height');
+		$text = $this->getOption('text');
 		$angle = mt_rand($text['angle']['min'], $text['angle']['max']);
 		$font = is_array($text['font']) ? $text['font'][mt_rand(0, sizeof($text['font']) - 1)] : $text['font'];
-		$paths = $this->getCaptcha()->getOption('paths');
+		$paths = $this->getOption('paths');
 		$fontPath = sprintf('%s/%s.ttf', $paths['font'], $font);
 		$fontSize = min($height * $text['font-size-ratio']['height'], $width * $text['font-size-ratio']['width']);
-		$code = $this->getCaptcha()->generateCode();
+		$code = $captcha->generateCode();
 		if (!($textBoundingBox = imagettfbbox($fontSize, $angle, $fontPath, $code['display']))) {
 			throw new \RuntimeException('RealCaptcha encountered an error calling imagettfbbox() function.');
 		}
