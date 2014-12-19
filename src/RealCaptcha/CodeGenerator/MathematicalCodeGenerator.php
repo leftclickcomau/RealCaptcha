@@ -20,18 +20,18 @@ use RealCaptcha\Util\CaptchaUtilities;
 class MathematicalCodeGenerator extends AbstractCodeGenerator {
 
 	public function generateCode() {
-    $length = $this->getOption('length');
-    if (!is_int($length) || $length <= 0) {
-      throw new \RuntimeException('Must specify an integer length greater than zero.');
-    }
+		$length = $this->getOption('length');
+		if (!is_int($length) || $length <= 0) {
+			throw new \RuntimeException('Must specify an integer length greater than zero.');
+		}
 
-    $operators = $this->getOption('operators');
-    if (strlen($operators) === 0) {
-      throw new \RuntimeException('Cannot generate a mathematical expression without operators.');
-    }
+		$operators = $this->getOption('operators');
+		if (strlen($operators) === 0) {
+			throw new \RuntimeException('Cannot generate a mathematical expression without operators.');
+		}
 
-    $min = $this->getOption('min-value');
-    $max = $this->getOption('max-value');
+		$min = $this->getOption('min-value');
+		$max = $this->getOption('max-value');
 
 		$components = array();
 		for ($i=0, $l=$length; $i<$l; $i++) {
