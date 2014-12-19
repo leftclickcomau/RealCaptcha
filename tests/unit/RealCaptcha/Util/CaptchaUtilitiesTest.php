@@ -15,8 +15,7 @@ class CaptchaUtilitiesTest extends \PHPUnit_Framework_TestCase {
 	// TODO tests for random()
 
 	public function testGetColourComponentIntegerValue() {
-		$value = CaptchaUtilities::getValueFromRange(42);
-		$this->assertEquals(42, $value);
+		$this->assertEquals(42, CaptchaUtilities::getValueFromRange(42));
 	}
 
 	public function testGetColourComponentCorrectlyStructuredArrayValue() {
