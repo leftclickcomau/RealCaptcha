@@ -24,9 +24,6 @@ class ShapesLayerRenderer extends AbstractLayerRenderer {
 		$height = $this->getOption('height');
 		$noise = $this->getOption('noise');
 		$shapesCount = max($noise['shapes']['min'], min($noise['shapes']['max'], ($width * $height) / $noise['shapes']['divisor']));
-
-		error_log(json_encode($noise));
-
 		for ($i=0; $i<$shapesCount; $i++) {
 			switch ($this->selectShape($noise['shapes']['distribution'])) {
 				case 'rectangle':

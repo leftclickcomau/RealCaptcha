@@ -74,7 +74,6 @@ class GDGraphicsEngine implements GraphicsEngineInterface {
 		if (!$this->image) {
 			throw new \Exception('GDGraphicsEngine not initialised');
 		}
-		error_log("drawEllipse($x, $y, $width, $height, [colour], $filled)");
 		$function = $filled ? 'imagefilledellipse' : 'imageellipse';
 		if (!$function($this->image, $x, $y, $width, $height, self::createColour($this->image, $colour))) {
 			throw new \RuntimeException('GDGraphicsEngine could not draw ellipse');
