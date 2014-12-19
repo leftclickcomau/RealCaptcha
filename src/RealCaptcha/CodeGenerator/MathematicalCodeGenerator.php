@@ -10,6 +10,8 @@
 
 namespace RealCaptcha\CodeGenerator;
 
+use RealCaptcha\Util\CaptchaUtilities;
+
 /**
  * Captcha code generator which displays a randomly generated mathematical equation, and expects the answer.
  *
@@ -33,9 +35,9 @@ class MathematicalCodeGenerator extends AbstractCodeGenerator {
 
 		$components = array();
 		for ($i=0, $l=$length; $i<$l; $i++) {
-			$components[] = mt_rand($min, $max);
+			$components[] = CaptchaUtilities::random($min, $max);
 			if ($i < $l - 1) {
-				$components[] = substr($operators, mt_rand(0, strlen($operators) - 1), 1);
+				$components[] = substr($operators, CaptchaUtilities::random(0, strlen($operators) - 1), 1);
 			}
 		}
 		$code = array( 'display' => implode('', $components) );

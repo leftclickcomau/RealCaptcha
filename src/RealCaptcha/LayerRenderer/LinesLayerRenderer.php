@@ -11,25 +11,27 @@
 namespace RealCaptcha\LayerRenderer;
 
 use RealCaptcha\CaptchaInterface;
-use RealCaptcha\Util\ColourUtilities;
+use RealCaptcha\GraphicsEngine\GraphicsEngineInterface;
+use RealCaptcha\Util\CaptchaUtilities;
 
 class LinesLayerRenderer extends AbstractLayerRenderer {
 
 	/**
 	 * @inheritdoc
 	 */
-	public function render($image, CaptchaInterface $captcha) {
+	public function render(GraphicsEngineInterface $graphicsEngine, CaptchaInterface $captcha) {
 		$width = $this->getOption('width');
 		$height = $this->getOption('height');
 		$noise = $this->getOption('noise');
 		$linesCount = max($noise['lines']['min'], min($noise['lines']['max'], ($width * $height) / $noise['lines']['divisor']));
 		for ($i=0; $i<$linesCount; $i++) {
-			$x0 = mt_rand(0, $width);
-			$y0 = mt_rand(0, $height);
-			$x1 = mt_rand(0, $width);
-			$y1 = mt_rand(0, $height);
-			$colour = ColourUtilities::createColour($image, $noise['colour']);
-			imageline($image, $x0, $y0, $x1, $y1, $colour);
+			$graphicsEngine->drawLine(
+				CaptchaUtilities::random(0, $width),
+				CaptchaUtilities::random(0, $height),
+				CaptchaUtilities::random(0, $width),
+				CaptchaUtilities::random(0, $height),
+				$noise['colour']
+			);
 		}
 	}
 

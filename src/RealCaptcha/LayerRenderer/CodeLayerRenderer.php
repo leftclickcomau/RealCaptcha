@@ -11,32 +11,28 @@
 namespace RealCaptcha\LayerRenderer;
 
 use RealCaptcha\CaptchaInterface;
-use RealCaptcha\Util\ColourUtilities;
+use RealCaptcha\GraphicsEngine\GraphicsEngineInterface;
+use RealCaptcha\Util\CaptchaUtilities;
 
 class CodeLayerRenderer extends AbstractLayerRenderer {
 
 	/**
 	 * @inheritdoc
 	 */
-	public function render($image, CaptchaInterface $captcha) {
+	public function render(GraphicsEngineInterface $graphicsEngine, CaptchaInterface $captcha) {
 		$width = $this->getOption('width');
 		$height = $this->getOption('height');
 		$text = $this->getOption('text');
-		$angle = mt_rand($text['angle']['min'], $text['angle']['max']);
-		$font = is_array($text['font']) ? $text['font'][mt_rand(0, sizeof($text['font']) - 1)] : $text['font'];
+		$angle = CaptchaUtilities::random($text['angle']['min'], $text['angle']['max']);
+		$font = is_array($text['font']) ? $text['font'][CaptchaUtilities::random(0, sizeof($text['font']) - 1)] : $text['font'];
 		$paths = $this->getOption('paths');
 		$fontPath = sprintf('%s/%s.ttf', $paths['font'], $font);
 		$fontSize = min($height * $text['font-size-ratio']['height'], $width * $text['font-size-ratio']['width']);
 		$code = $captcha->generateCode();
-		if (!($textBoundingBox = imagettfbbox($fontSize, $angle, $fontPath, $code['display']))) {
-			throw new \RuntimeException('RealCaptcha encountered an error calling imagettfbbox() function.');
-		}
-		$x = ($width - $textBoundingBox[4]) / 2;
-		$y = ($height - $textBoundingBox[5]) / 2;
-		$colour = ColourUtilities::createColour($image, $text['colour']);
-		if (!imagettftext($image, $fontSize, $angle, $x, $y, $colour, $fontPath , $code['display'])) {
-			throw new \RuntimeException('RealCaptcha encountered an error calling imagettftext() function.');
-		}
+		$textBoundingBox = $graphicsEngine->getTextDimensions($code['display'], $fontPath, $fontSize, $angle);
+		$x = ($width - $textBoundingBox['width']) / 2;
+		$y = ($height - $textBoundingBox['height']) / 2;
+		$graphicsEngine->drawText($x, $y, $code['display'], $fontPath, $fontSize, $text['colour'], $angle);
 	}
 
 }
