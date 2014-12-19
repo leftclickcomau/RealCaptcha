@@ -13,7 +13,7 @@ namespace RealCaptcha\GraphicsEngine;
 use RealCaptcha\Util\CaptchaUtilities;
 
 /**
- * Defines the behaviour of an object responsible for drawing a single layer onto an image.
+ * Graphics engine that uses the GD library for its low-level drawing operations.
  *
  * @package RealCaptcha\Layer
  */
