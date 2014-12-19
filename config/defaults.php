@@ -32,6 +32,11 @@ return array(
 		'height' => 60,
 
 		/**
+		 * Graphics engine to use.  Currently only 'GD' is supported out of the box.
+		 */
+		'graphics-engine' => 'GD',
+
+		/**
 		 * Format for the image, must be either 'png', 'jpg' or 'gif'.
 		 */
 		'image-format' => 'png',

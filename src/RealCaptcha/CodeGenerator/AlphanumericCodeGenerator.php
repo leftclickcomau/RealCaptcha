@@ -10,6 +10,8 @@
 
 namespace RealCaptcha\CodeGenerator;
 
+use RealCaptcha\Util\CaptchaUtilities;
+
 /**
  * Captcha code generator which produces a random string of alpha-numeric characters, and expects the same code.
  *
@@ -18,19 +20,19 @@ namespace RealCaptcha\CodeGenerator;
 class AlphanumericCodeGenerator extends AbstractCodeGenerator {
 
 	public function generateCode() {
-    $length = $this->getOption('length');
-    if (!is_int($length) || $length <= 0) {
-      throw new \RuntimeException('Must specify an integer length greater than zero.');
-    }
+		$length = $this->getOption('length');
+		if (!is_int($length) || $length <= 0) {
+			throw new \RuntimeException('Must specify an integer length greater than zero.');
+		}
 
-    $characters = $this->getOption('characters');
-    if (!is_string($characters) || strlen($characters) === 0) {
-      throw new \RuntimeException('Must specify at least one character to generate the code from.');
-    }
+		$characters = $this->getOption('characters');
+		if (!is_string($characters) || strlen($characters) === 0) {
+			throw new \RuntimeException('Must specify at least one character to generate the code from.');
+		}
 
 		$code = array( 'display' => '' );
 		for ($i=0, $max=strlen($characters)-1; $i<$length; $i++) {
-			$code['display'] .= substr($characters, mt_rand(0, $max), 1);
+			$code['display'] .= substr($characters, CaptchaUtilities::random(0, $max), 1);
 		}
 
 		$code['result'] = $code['display'];

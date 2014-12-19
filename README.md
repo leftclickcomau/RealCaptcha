@@ -41,6 +41,13 @@ in the rendering sequence, except the code layer which should only be used once.
 The layer renderer mechanism is also extensible through an interface and abstract class.  For example, images could be
 added in the background.
 
+Graphics Engines
+----------------
+
+The graphics layer, which handles the low-level drawing operations, is also abstract.  Currently, the only 
+implementation that is packaged with RealCaptcha uses the GD library for its drawing operations.  Other implementations
+can be easily added, e.g. utilising the ImageMagick library.
+
 No Reload Button?
 -----------------
 
@@ -56,3 +63,11 @@ Composer
         //...
         "leftclickcomau/real-captcha": "*"
     }
+
+Unit Tests
+----------
+
+To run the unit tests, from the project root:
+
+1. composer install --dev
+2. phpunit --bootstrap=vendor/autoload.php tests/unit

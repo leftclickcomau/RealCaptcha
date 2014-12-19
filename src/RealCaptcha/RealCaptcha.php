@@ -11,8 +11,9 @@
 namespace RealCaptcha;
 
 use RealCaptcha\CodeGenerator\CodeGeneratorInterface;
+use RealCaptcha\GraphicsEngine\GraphicsEngineInterface;
 use RealCaptcha\LayerRenderer\LayerRendererInterface;
-use RealCaptcha\Util\ColourUtilities;
+use RealCaptcha\Util\CaptchaUtilities;
 
 /**
  * RealCaptcha provides an easy to implement captcha mechanism for any type of web form.
@@ -45,6 +46,11 @@ class RealCaptcha implements OptionsInterface, CaptchaInterface {
 	const SESSION_KEY_BASE_CODE = 'code';
 
 	/**
+	 * FQCN pattern for graphics engines.
+	 */
+	const CLASS_NAME_FORMAT_GRAPHICS_ENGINE = '\\RealCaptcha\\GraphicsEngine\\%sGraphicsEngine';
+
+	/**
 	 * FQCN pattern for code generators.
 	 */
 	const CLASS_NAME_FORMAT_CODE_GENERATOR = '\\RealCaptcha\\CodeGenerator\\%sCodeGenerator';
@@ -69,37 +75,37 @@ class RealCaptcha implements OptionsInterface, CaptchaInterface {
 	 * @throws \RuntimeException
 	 */
 	public function __construct(array $options=null) {
-    // Merge options into defaults
-    /** @noinspection PhpIncludeInspection */
-    $defaults = require sprintf('%s/%s', __DIR__, self::PATH_DEFAULTS);
-    if (!isset($options['type'])) {
-      $options['type'] = self::TYPE_ALPHANUMERIC;
-    }
-    $this->options = array_merge_recursive(
-      $defaults['base'],
-      $defaults[strtolower($options['type'])],
-      $options ?: array()
-    );
+		// Merge options into defaults
+		/** @noinspection PhpIncludeInspection */
+		$defaults = require sprintf('%s/%s', __DIR__, self::PATH_DEFAULTS);
+		if (!isset($options['type'])) {
+			$options['type'] = self::TYPE_ALPHANUMERIC;
+		}
+		$this->options = array_merge_recursive(
+			$defaults['base'],
+			$defaults[strtolower($options['type'])],
+			$options ?: array()
+		);
 
-    // Start session if required
-    $startSession = false;
-    if (is_callable('session_status')) {
-      switch (session_status()) {
-        case PHP_SESSION_ACTIVE:
-          // Do nothing, session is already started.
-          break;
-        case PHP_SESSION_NONE:
-          $startSession = true;
-          break;
-        case PHP_SESSION_DISABLED:
-          throw new \RuntimeException('RealCaptcha requires sessions to be enabled.');
-      }
-    } elseif (session_id() === '') {
-      $startSession = true;
-    }
-    if ($startSession) {
-      session_start();
-    }
+		// Start session if required
+		$startSession = false;
+		if (is_callable('session_status')) {
+			switch (session_status()) {
+				case PHP_SESSION_ACTIVE:
+					// Do nothing, session is already started.
+					break;
+				case PHP_SESSION_NONE:
+					$startSession = true;
+					break;
+				case PHP_SESSION_DISABLED:
+					throw new \RuntimeException('RealCaptcha requires sessions to be enabled.');
+			}
+		} elseif (session_id() === '') {
+			$startSession = true;
+		}
+		if ($startSession) {
+			session_start();
+		}
 	}
 
 	//-- OptionsInterface Methods --------------------
@@ -129,34 +135,34 @@ class RealCaptcha implements OptionsInterface, CaptchaInterface {
 	//-- CaptchaInterface Methods --------------------
 
 	public function writeImage() {
-    $width = intval($this->getOption('width'));
- 		$height = intval($this->getOption('height'));
-    if (!($image = imagecreate($width, $height))) {
-      throw new \RuntimeException('RealCaptcha could not create image');
-    }
-    $colour = ColourUtilities::createColour($image, $this->getOption('background-colour'));
-    imagefilledrectangle($image, 0, 0, $width, $height, $colour);
+		$graphicsEngineClassName = sprintf(self::CLASS_NAME_FORMAT_GRAPHICS_ENGINE, $this->getOption('graphics-engine'));
+		/** @var GraphicsEngineInterface $graphicsEngine */
+		$graphicsEngine = new $graphicsEngineClassName();
+		$graphicsEngine->initialise(
+			intval($this->getOption('width')),
+			intval($this->getOption('height')),
+			$this->getOption('background-colour')
+		);
 
 		foreach ($this->getOption('layers') as $layer) {
-      $className = sprintf(self::CLASS_NAME_FORMAT_LAYER_RENDERER, $layer);
-      /** @var LayerRendererInterface $renderer */
-      $renderer = new $className($this);
-      $renderer->render($image, $this);
+			$layerRendererClassName = sprintf(self::CLASS_NAME_FORMAT_LAYER_RENDERER, $layer);
+			/** @var LayerRendererInterface $renderer */
+			$renderer = new $layerRendererClassName($this);
+			$renderer->render($graphicsEngine, $this);
 		}
 
-    $format = strtolower($this->getOption('image-format'));
-    header('Cache-Control: no-cache');
-    header('Expires: ' . date('r'));
-    header('Content-Type: image/' . $format);
-    $method = 'image' . $format;
-    $method($image);
-    imagedestroy($image);
+		$format = strtolower($this->getOption('image-format'));
+		header('Cache-Control: no-cache');
+		header('Expires: ' . date('r'));
+		header('Content-Type: image/' . $format);
+		$graphicsEngine->render($format);
+		$graphicsEngine->cleanup();
 	}
 
 	public function generateCode() {
-		$className = sprintf(self::CLASS_NAME_FORMAT_CODE_GENERATOR, $this->getOption('type'));
+		$codeGeneratorClassName = sprintf(self::CLASS_NAME_FORMAT_CODE_GENERATOR, $this->getOption('type'));
 		/** @var CodeGeneratorInterface $generator */
-		$generator = new $className($this);
+		$generator = new $codeGeneratorClassName($this);
 		$code = $generator->generateCode();
 		$_SESSION[$this->getSessionKey()] = $code;
 		return $code;
@@ -176,8 +182,8 @@ class RealCaptcha implements OptionsInterface, CaptchaInterface {
 	//-- Internal Methods --------------------
 
  	protected function getSessionKey() {
- 		$namespace = $this->getOption('namespace');
- 		return empty($namespace) ? self::SESSION_KEY_BASE_CODE : sprintf('%s.%s', $namespace, self::SESSION_KEY_BASE_CODE);
+		$namespace = $this->getOption('namespace');
+		return empty($namespace) ? self::SESSION_KEY_BASE_CODE : sprintf('%s.%s', $namespace, self::SESSION_KEY_BASE_CODE);
  	}
 
 }

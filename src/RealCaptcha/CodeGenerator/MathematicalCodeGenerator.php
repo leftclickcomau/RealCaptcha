@@ -10,6 +10,8 @@
 
 namespace RealCaptcha\CodeGenerator;
 
+use RealCaptcha\Util\CaptchaUtilities;
+
 /**
  * Captcha code generator which displays a randomly generated mathematical equation, and expects the answer.
  *
@@ -18,24 +20,24 @@ namespace RealCaptcha\CodeGenerator;
 class MathematicalCodeGenerator extends AbstractCodeGenerator {
 
 	public function generateCode() {
-    $length = $this->getOption('length');
-    if (!is_int($length) || $length <= 0) {
-      throw new \RuntimeException('Must specify an integer length greater than zero.');
-    }
+		$length = $this->getOption('length');
+		if (!is_int($length) || $length <= 0) {
+			throw new \RuntimeException('Must specify an integer length greater than zero.');
+		}
 
-    $operators = $this->getOption('operators');
-    if (strlen($operators) === 0) {
-      throw new \RuntimeException('Cannot generate a mathematical expression without operators.');
-    }
+		$operators = $this->getOption('operators');
+		if (strlen($operators) === 0) {
+			throw new \RuntimeException('Cannot generate a mathematical expression without operators.');
+		}
 
-    $min = $this->getOption('min-value');
-    $max = $this->getOption('max-value');
+		$min = $this->getOption('min-value');
+		$max = $this->getOption('max-value');
 
 		$components = array();
 		for ($i=0, $l=$length; $i<$l; $i++) {
-			$components[] = mt_rand($min, $max);
+			$components[] = CaptchaUtilities::random($min, $max);
 			if ($i < $l - 1) {
-				$components[] = substr($operators, mt_rand(0, strlen($operators) - 1), 1);
+				$components[] = substr($operators, CaptchaUtilities::random(0, strlen($operators) - 1), 1);
 			}
 		}
 		$code = array( 'display' => implode('', $components) );

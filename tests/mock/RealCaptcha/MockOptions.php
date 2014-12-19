@@ -11,7 +11,7 @@
 namespace RealCaptcha;
 
 /**
- * Defines the behaviour of an options container.
+ * Mock options container.
  *
  * @package RealCaptcha
  */

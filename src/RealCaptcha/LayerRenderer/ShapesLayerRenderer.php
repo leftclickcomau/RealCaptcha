@@ -11,43 +11,49 @@
 namespace RealCaptcha\LayerRenderer;
 
 use RealCaptcha\CaptchaInterface;
-use RealCaptcha\Util\ColourUtilities;
+use RealCaptcha\GraphicsEngine\GraphicsEngineInterface;
+use RealCaptcha\Util\CaptchaUtilities;
 
 class ShapesLayerRenderer extends AbstractLayerRenderer {
 
 	/**
 	 * @inheritdoc
 	 */
-	public function render($image, CaptchaInterface $captcha) {
+	public function render(GraphicsEngineInterface $graphicsEngine, CaptchaInterface $captcha) {
 		$width = $this->getOption('width');
 		$height = $this->getOption('height');
 		$noise = $this->getOption('noise');
 		$shapesCount = max($noise['shapes']['min'], min($noise['shapes']['max'], ($width * $height) / $noise['shapes']['divisor']));
 		for ($i=0; $i<$shapesCount; $i++) {
-			$colour = ColourUtilities::createColour($image, $noise['colour']);
 			switch ($this->selectShape($noise['shapes']['distribution'])) {
 				case 'rectangle':
-					$cx = mt_rand(0, $width);
-					$cy = mt_rand(0, $height);
-					$x2 = mt_rand(0, $width);
-					$y2 = mt_rand(0, $height);
-					imagerectangle($image, $cx, $cy, $x2, $y2, $colour);
+					$graphicsEngine->drawRectangle(
+						CaptchaUtilities::random(0, $width),
+						CaptchaUtilities::random(0, $height),
+						CaptchaUtilities::random(0, $width),
+						CaptchaUtilities::random(0, $height),
+						$noise['colour']
+					);
 					break;
 				case 'ellipse':
-					$cx = mt_rand(0, $width);
-					$cy = mt_rand(0, $height);
-					$width = mt_rand(0, $width / $noise['shapes']['size-divisor']);
-					$height = mt_rand(0, $height / $noise['shapes']['size-divisor']);
-					imageellipse($image, $cx, $cy, $width, $height, $colour);
+					$graphicsEngine->drawEllipse(
+						CaptchaUtilities::random(0, $width),
+						CaptchaUtilities::random(0, $height),
+						CaptchaUtilities::random(0, intval($width / $noise['shapes']['size-divisor'])),
+						CaptchaUtilities::random(0, intval($height / $noise['shapes']['size-divisor'])),
+						$noise['colour']
+					);
 					break;
 				case 'arc':
-					$cx = mt_rand(0, $width);
-					$cy = mt_rand(0, $height);
-					$width = mt_rand(0, $width / $noise['shapes']['size-divisor']);
-					$height = mt_rand(0, $height / $noise['shapes']['size-divisor']);
-					$start = mt_rand(0, 360);
-					$end = mt_rand(0, 360);
-					imagearc($image, $cx, $cy, $width, $height, $start, $end, $colour);
+					$graphicsEngine->drawArc(
+						CaptchaUtilities::random(0, $width),
+						CaptchaUtilities::random(0, $height),
+						CaptchaUtilities::random(0, intval($width / $noise['shapes']['size-divisor'])),
+						CaptchaUtilities::random(0, intval($height / $noise['shapes']['size-divisor'])),
+						CaptchaUtilities::random(0, 360),
+						CaptchaUtilities::random(0, 360),
+						$noise['colour']
+					);
 					break;
 			}
 		}
@@ -63,7 +69,7 @@ class ShapesLayerRenderer extends AbstractLayerRenderer {
 	 * @return string
 	 */
 	protected function selectShape($distribution) {
-		$rand = mt_rand(0, array_sum(array_map(function($item) { return $item['weight']; }, $distribution)) - 1);
+		$rand = CaptchaUtilities::random(0, array_sum(array_map(function($item) { return $item['weight']; }, $distribution)) - 1);
 		while ($rand >= $distribution[0]['weight']) {
 			$distributionItem = array_shift($distribution);
 			$rand -= $distributionItem['weight'];

@@ -11,23 +11,28 @@
 namespace RealCaptcha\LayerRenderer;
 
 use RealCaptcha\CaptchaInterface;
-use RealCaptcha\Util\ColourUtilities;
+use RealCaptcha\GraphicsEngine\GraphicsEngineInterface;
+use RealCaptcha\Util\CaptchaUtilities;
 
 class DotsLayerRenderer extends AbstractLayerRenderer {
 
 	/**
 	 * @inheritdoc
 	 */
-	public function render($image, CaptchaInterface $captcha) {
+	public function render(GraphicsEngineInterface $graphicsEngine, CaptchaInterface $captcha) {
 		$width = $this->getOption('width');
 		$height = $this->getOption('height');
 		$noise = $this->getOption('noise');
 		$dotsCount = max($noise['dots']['min'], min($noise['dots']['max'], ($width * $height) / $noise['dots']['divisor']));
 		for ($i=0; $i<$dotsCount; $i++) {
-			$x = mt_rand(0, $width);
-			$y = mt_rand(0, $height);
-			$colour = ColourUtilities::createColour($image, $noise['colour']);
-			imagefilledellipse($image, $x, $y, 1, 1, $colour);
+			$graphicsEngine->drawEllipse(
+				CaptchaUtilities::random(0, $width),
+				CaptchaUtilities::random(0, $height),
+				1,
+				1,
+				$noise['colour'],
+				true
+			);
 		}
 	}
 

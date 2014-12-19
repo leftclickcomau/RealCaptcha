@@ -17,8 +17,8 @@ namespace RealCaptcha;
  */
 interface CaptchaInterface {
 
-  /**
- 	 * Write the JPEG image data to standard output.
+	/**
+ 	 * Render the image data to standard output.
  	 *
  	 * @throws \RuntimeException
  	 */

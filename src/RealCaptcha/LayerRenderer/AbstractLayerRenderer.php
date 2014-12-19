@@ -39,13 +39,13 @@ abstract class AbstractLayerRenderer implements LayerRendererInterface {
 
 	//-- Internal Methods --------------------
 
-  /**
- 	 * Proxy to the getOption() method in the OptionsInterface implementation.
-    *
-    * @param string $key
-    *
-    * @return mixed
- 	 */
+	/**
+	 * Proxy to the getOption() method in the OptionsInterface implementation.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
  	protected function getOption($key) {
  		return $this->options->getOption($key);
  	}

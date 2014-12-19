@@ -19,7 +19,10 @@
 	},
 	"autoload": {
 		"psr-0": {
-			"RealCaptcha": "src/"
+			"RealCaptcha": [
+				"src/",
+				"tests/mock/"
+			]
 		}
 	}
 }

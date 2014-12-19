@@ -17,12 +17,12 @@ namespace RealCaptcha;
  */
 interface OptionsInterface {
 
-  /**
+  	/**
  	 * Retrieve the option with the given key.
  	 *
  	 * @param string $key
  	 *
-   * @return mixed|null
+	 * @return mixed|null
  	 */
  	public function getOption($key);
 
