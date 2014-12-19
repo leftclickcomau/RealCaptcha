@@ -19,7 +19,9 @@ class AlphanumericCodeGeneratorTest extends \PHPUnit_Framework_TestCase {
 			'characters' => 'abcABC',
 			'length' => 10
 		)));
+
 		$code = $generator->generateCode();
+
 		$this->assertEquals(10, strlen($code['result']));
 		$this->assertSame($code['result'], $code['display']);
 		$this->assertEquals(2, sizeof($code));

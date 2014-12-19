@@ -21,7 +21,9 @@ class MathematicalCodeGeneratorTest extends \PHPUnit_Framework_TestCase {
 			'min-value' => 0,
 			'max-value' => 9
 		)));
+
 		$code = $generator->generateCode();
+
 		$this->assertEquals(3, strlen($code['display']));
 		$expectedResult = intval($code['display'][0]) + intval($code['display'][2]);
 		$this->assertEquals($expectedResult, $code['result']);
